@@ -1,0 +1,10 @@
+{
+  "name": "turkiye-harita-oyunu",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Türkiye'nin 81 ilini etkileşimli oyunlarla öğren.",
+  "scripts": {
+    "start": "npx serve dist",
+    "check": "node scripts/check.mjs"
+  }
+}

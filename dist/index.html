@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f3e8">
+  <meta name="description" content="Türkiye'nin 81 ilini dört farklı interaktif harita oyunuyla öğren.">
+  <title>Türkiye Harita Oyunu</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="app">
+    <section id="welcome-screen" class="screen welcome-screen is-active" aria-labelledby="welcome-title">
+      <div class="flag-orbit" aria-hidden="true"><span>★</span><span>✦</span><span>★</span></div>
+      <div class="welcome-copy">
+        <p class="eyebrow">81 İL · 4 OYUN · TEK HARİTA</p>
+        <h1 id="welcome-title">Türklerin ülkesi Türkiye şehirler oyununa hoşgeldiniz.</h1>
+        <p class="lede">Haritaya ne kadar hakimsin? Refleksini ve coğrafya bilgini birlikte ölç.</p>
+        <button class="press-key" data-next="tribute-screen">Başlamak için herhangi bir tuşa bas</button>
+      </div>
+      <div class="turkey-word" aria-hidden="true">TÜRKİYE</div>
+    </section>
+
+    <section id="tribute-screen" class="screen tribute-screen" aria-labelledby="tribute-title">
+      <div class="tribute-shade"></div>
+      <div class="tribute-copy">
+        <p class="eyebrow light">BİR MİLLETİN ORTAK HAFIZASI</p>
+        <h2 id="tribute-title">Ne Mutlu<br><em>Türküm</em> Diyene!</h2>
+        <p>Şehirlerini tanı, memleketini keşfet.</p>
+        <button class="primary-button" data-next="mode-screen">Oyunları keşfet</button>
+      </div>
+      <p class="image-credit">Portre: maliozer/ataturk_blackwhite_portrait · MIT</p>
+    </section>
+
+    <section id="mode-screen" class="screen mode-screen" aria-labelledby="mode-title">
+      <header class="selection-header">
+        <div>
+          <p class="eyebrow">TÜRKİYE HARİTA OYUNU</p>
+          <h2 id="mode-title">Bir oyun seç.</h2>
+        </div>
+        <p>Her mod 81 ilin tamamıyla oynanır. Süre ilk hamlende başlar.</p>
+      </header>
+      <div class="mode-grid">
+        <button class="mode-card mode-red" data-mode="locate">
+          <span class="mode-index">01</span>
+          <span class="mode-icon" aria-hidden="true">⌖</span>
+          <strong>Seç &amp; Bil</strong>
+          <small>Haritada bir ile dokun, adını yaz ve konum hafızanı ölç.</small>
+          <span class="mode-cta">Oyuna başla</span>
+        </button>
+        <button class="mode-card mode-green" data-mode="fill">
+          <span class="mode-index">02</span>
+          <span class="mode-icon" aria-hidden="true">✎</span>
+          <strong>81'i Doldur</strong>
+          <small>İl isimlerini yaz, tüm Türkiye'yi olabildiğince hızlı yeşile boya.</small>
+          <span class="mode-cta">Oyuna başla</span>
+        </button>
+        <button class="mode-card mode-navy" data-mode="listen">
+          <span class="mode-index">03</span>
+          <span class="mode-icon" aria-hidden="true">◖))</span>
+          <strong>Dinle &amp; Bul</strong>
+          <small>Söylenen şehri haritada seç; üç hatada konum ipucunu yakala.</small>
+          <span class="mode-cta">Oyuna başla</span>
+        </button>
+        <button class="mode-card mode-gold" data-mode="plate">
+          <span class="mode-index">04</span>
+          <span class="mode-icon" aria-hidden="true">15</span>
+          <strong>Plaka Ustası</strong>
+          <small>1'den 81'e plaka kodlarını doğru illerle eşleştir.</small>
+          <span class="mode-cta">Oyuna başla</span>
+        </button>
+      </div>
+      <p class="selection-note">İpucu: Türkçe karakter kullanmasan da cevaplarını anlayacağız.</p>
+    </section>
+
+    <section id="game-screen" class="screen game-screen" aria-labelledby="game-title">
+      <header class="game-header">
+        <button id="back-button" class="icon-button" aria-label="Oyun seçimine dön">×</button>
+        <div class="game-brand"><span class="brand-mark">TR</span><span>Türkiye<br><b>Harita Oyunu</b></span></div>
+        <div class="game-stats">
+          <div><small>SÜRE</small><strong id="timer">00:00</strong></div>
+          <div><small>İLERLEME</small><strong id="progress">0 / 81</strong></div>
+        </div>
+      </header>
+
+      <div class="game-layout">
+        <aside class="control-panel">
+          <p id="mode-kicker" class="eyebrow">OYUN 01</p>
+          <h1 id="game-title">Seç &amp; Bil</h1>
+          <p id="game-description" class="game-description"></p>
+          <div id="dynamic-controls"></div>
+          <div id="feedback" class="feedback" role="status" aria-live="polite">Hazır olduğunda ilk hamleni yap.</div>
+          <div class="panel-actions">
+            <button id="restart-button" class="secondary-button">Yeniden başlat</button>
+            <button id="sound-button" class="secondary-button is-hidden">Sesi tekrarla</button>
+          </div>
+        </aside>
+
+        <div class="map-area">
+          <div class="map-toolbar">
+            <span id="map-prompt">Haritadan bir şehir seç</span>
+            <span class="legend"><i class="correct-dot"></i> Doğru <i class="wrong-dot"></i> Yanlış</span>
+          </div>
+          <div id="map-shell" class="map-shell" aria-busy="true">
+            <svg id="turkey-map" viewBox="0 0 1000 500" role="group" aria-label="Türkiye'nin 81 ilini gösteren etkileşimli dilsiz harita"></svg>
+            <div id="map-loader" class="map-loader"><span></span>Harita hazırlanıyor…</div>
+          </div>
+          <div id="plate-board" class="plate-board is-hidden" aria-label="Plaka kodları"></div>
+          <p class="data-credit">Sınır verisi © OpenStreetMap katkıcıları · ODbL</p>
+        </div>
+      </div>
+
+      <div id="finish-dialog" class="finish-dialog" role="dialog" aria-modal="true" aria-labelledby="finish-title" hidden>
+        <div class="finish-card">
+          <span class="finish-star">★</span>
+          <p class="eyebrow">TÜRKİYE TAMAM!</p>
+          <h2 id="finish-title">81 ilin hepsi sende.</h2>
+          <p id="finish-summary"></p>
+          <div class="finish-actions">
+            <button id="finish-restart" class="primary-button">Tekrar oyna</button>
+            <button id="finish-menu" class="secondary-button">Oyunları gör</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <datalist id="province-list"></datalist>
+  <script src="app.js" defer></script>
+</body>
+</html>
