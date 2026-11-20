@@ -9,11 +9,24 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Harita Oyunu">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:title" content="Türkiye Harita Oyunu">
+  <meta property="og:description" content="Türkiye'nin 81 ilini dört farklı interaktif harita oyunuyla keşfet. Süreye karşı oyna, bilgini ölç ve sonucunu paylaş.">
+  <meta property="og:url" content="https://fetiicolak.github.io/Turkiye-harita-oyunu/">
+  <meta property="og:image" content="https://fetiicolak.github.io/Turkiye-harita-oyunu/assets/linkedin-preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="627">
+  <meta property="og:image:alt" content="Türkiye Harita Oyunu — 81 il, 4 oyun ve PWA">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Türkiye Harita Oyunu">
+  <meta name="twitter:description" content="Türkiye'nin 81 ilini dört farklı interaktif harita oyunuyla keşfet.">
+  <meta name="twitter:image" content="https://fetiicolak.github.io/Turkiye-harita-oyunu/assets/linkedin-preview.png">
   <title>Türkiye Harita Oyunu</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="assets/app-icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="styles.css?v=11">
 </head>
 <body>
   <main id="app">
@@ -59,6 +72,7 @@
           <p class="eyebrow">TÜRKİYE HARİTA OYUNU</p>
           <h2 id="mode-title">Bir oyun seç.</h2>
         </div>
+        <button id="records-button" class="records-button" type="button">Kişisel Rekorlarım</button>
       </header>
       <div class="mode-grid">
         <button class="mode-card mode-red" data-mode="locate">
@@ -113,7 +127,7 @@
           <p id="mode-kicker" class="eyebrow">OYUN 01</p>
           <h1 id="game-title">Seç &amp; Bil</h1>
           <p id="game-description" class="game-description"></p>
-          <button id="start-game-button" class="primary-button game-start-button" type="button">Başla</button>
+          <button id="start-game-button" class="primary-button game-start-button" type="button" hidden>Başla</button>
           <div id="dynamic-controls"></div>
           <div id="feedback" class="feedback" role="status" aria-live="polite">Hazır olduğunda ilk hamleni yap.</div>
           <div class="panel-actions">
@@ -156,8 +170,10 @@
           </div>
           <div class="finish-actions">
             <button id="finish-restart" class="primary-button">Tekrar oyna</button>
+            <button id="share-result" class="secondary-button" type="button">Sonucu paylaş</button>
             <button id="finish-menu" class="secondary-button">Oyunları gör</button>
           </div>
+          <small id="share-status" class="share-status" role="status" aria-live="polite"></small>
         </div>
       </div>
 
@@ -174,6 +190,19 @@
         </div>
       </div>
     </section>
+
+    <div id="records-dialog" class="finish-dialog" role="dialog" aria-modal="true" aria-labelledby="records-title" hidden>
+      <div class="finish-card records-card">
+        <p class="eyebrow">BU CİHAZDAKİ KAYITLAR</p>
+        <h2 id="records-title">Kişisel Rekorlarım</h2>
+        <p id="records-empty">Henüz kaydedilmiş bir sonuç yok.</p>
+        <div id="records-list" class="records-list"></div>
+        <div class="records-actions">
+          <button id="records-clear" class="secondary-button" type="button">Kayıtları temizle</button>
+          <button id="records-close" class="primary-button" type="button">Kapat</button>
+        </div>
+      </div>
+    </div>
   </main>
   <button id="install-app" class="install-app" type="button" hidden>
     <span aria-hidden="true">↓</span> Uygulamayı indir
@@ -183,6 +212,6 @@
     <strong>Ana ekrana ekle</strong>
     <p id="install-guide-text">Tarayıcı menüsünü açıp “Uygulamayı yükle” seçeneğini kullan.</p>
   </div>
-  <script src="app.js?v=10" defer></script>
+  <script src="app.js?v=11" defer></script>
 </body>
 </html>

@@ -19,6 +19,11 @@ Bu dosya, geliştirme sırasında alınan önemli teknik ve ürün kararlarını
 - İl adları tüm oyun modlarında SVG erişilebilir başlıklarıyla imleç üzerine gelindiğinde gösterilir.
 - Mobil tanıtım ekranlarında sola kaydırma ileri, sağa kaydırma geri gezinir. Gezinme düğmelerinde bu hareketler alt açıklama olarak yer alır.
 - PWA ikonu ve favicon, kuzey yarım küreden Türkiye'ye odaklanan aynı kare küre görselinin 512, 192 ve 64 piksel PNG türevleridir.
+- LinkedIn ve diğer sosyal ağ bağlantı önizlemeleri için 1200×627 piksel özel kapak ve Open Graph/Twitter Card meta etiketleri kullanılır.
+- Süre kayıtları oyun seçme ekranındaki `Kişisel Rekorlarım` penceresinde son 20 sonuç ve her modun en iyi tamamlama süresiyle gösterilir.
+- Sonuç ekranı Web Share API ile cihazın paylaşım menüsünü açar; desteklenmeyen tarayıcılarda sonuç metni ve oyun bağlantısı panoya kopyalanır.
+- Playwright smoke testleri ana akışı, dört oyun modunu, başlamamış oyundan çıkışı, rekorları, tablet kaydırmasını, sosyal meta etiketlerini ve 81 il tamamlamasını sınar. GitHub Pages yayını bu testler geçmeden yapılmaz.
+- README vitrini gerçek uygulama ekran görüntüleri ve 17,7 saniyelik MP4 demo içerir. Kaynak kod MIT lisanslıdır; harita verisi ve üçüncü taraf görseller kendi lisanslarını korur.
 - PWA önbelleği güncellemelerde sürümlenir ve uygulama dosyalarında ağ öncelikli strateji kullanılır. Bu karar, eski JavaScript’in oyunları bozmasını önlemek içindir.
 
 ## Görsel kararlar

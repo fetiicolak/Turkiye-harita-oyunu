@@ -82,6 +82,8 @@ button { cursor: pointer; }
 .selection-header { display: flex; align-items: end; justify-content: space-between; gap: 2rem; max-width: 1440px; width: 100%; margin: 0 auto 2.5rem; }
 .selection-header h2 { margin: 0; font: 700 clamp(2.7rem, 5vw, 5.6rem)/1 var(--serif); }
 .selection-header > p { max-width: 400px; margin: 0; color: var(--muted); line-height: 1.65; }
+.records-button { border: 1px solid var(--line); border-radius: 999px; padding: .85rem 1.1rem; background: rgba(255,255,255,.72); color: var(--ink); font-weight: 700; box-shadow: 0 10px 30px rgba(42,38,25,.08); }
+.records-button:hover { border-color: var(--gold); background: #fffaf0; transform: translateY(-2px); }
 .mode-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; max-width: 1440px; width: 100%; margin: auto; }
 .mode-card { position: relative; min-height: 470px; overflow: hidden; border: 0; border-radius: 22px; padding: 1.5rem; text-align: left; color: white; box-shadow: var(--shadow); transition: transform .3s ease, box-shadow .3s ease; }
 .mode-card:hover { transform: translateY(-8px); box-shadow: 0 30px 80px rgba(42,38,25,.22); }
@@ -179,6 +181,16 @@ button { cursor: pointer; }
 .save-time-prompt > div { display: flex; justify-content: center; gap: .6rem; }
 .save-time-prompt button { padding: .7rem 1rem; font-size: .82rem; }
 .save-time-prompt small { display: block; min-height: 1.2rem; margin-top: .65rem; color: var(--green); font-weight: 700; }
+.share-status { display: block; min-height: 1.2rem; margin-top: .75rem; color: var(--green); font-weight: 700; }
+.records-card { width: min(680px, 100%); max-height: min(760px, calc(100dvh - 3rem)); overflow: auto; text-align: left; }
+.records-card h2 { text-align: left; }
+.records-list { display: grid; gap: .75rem; margin-top: 1.2rem; }
+.record-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem 1rem; border: 1px solid var(--line); border-radius: 14px; padding: .9rem 1rem; background: rgba(255,255,255,.58); }
+.record-row strong { font-family: var(--serif); font-size: 1.05rem; }
+.record-row span { color: var(--green); font-weight: 700; font-variant-numeric: tabular-nums; }
+.record-row small { grid-column: 1 / -1; color: var(--muted); }
+.record-best { border-color: rgba(201,152,53,.48); background: #fff9e9; }
+.records-actions { display: flex; justify-content: flex-end; gap: .65rem; margin-top: 1.25rem; }
 
 @media (max-width: 1000px) {
   .mode-grid { grid-template-columns: repeat(2, 1fr); }
@@ -226,6 +238,10 @@ button { cursor: pointer; }
   .mobile-copy { display: inline; }
 }
 
+.touch-device .screen-nav button small { display: block; }
+.touch-device .desktop-copy { display: none; }
+.touch-device .mobile-copy { display: inline; }
+
 @media (max-width: 640px) {
   .install-app { top: auto; right: max(.75rem, env(safe-area-inset-right)); bottom: max(.75rem, env(safe-area-inset-bottom)); }
   .install-guide { top: auto; right: .75rem; bottom: calc(max(.75rem, env(safe-area-inset-bottom)) + 3.7rem); }
@@ -246,6 +262,7 @@ button { cursor: pointer; }
   .tribute-copy h2 { font-size: clamp(3.6rem, 17vw, 5.5rem); }
   .selection-header { display: block; }
   .selection-header > p { margin-top: 1rem; }
+  .records-button { margin-top: 1rem; }
   .mode-grid { grid-template-columns: 1fr; }
   .mode-card { min-height: 330px; }
   .mode-icon { position: absolute; right: 1.5rem; top: 1.5rem; width: 70px; height: 70px; margin: 0; }

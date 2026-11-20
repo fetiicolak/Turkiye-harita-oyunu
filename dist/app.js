@@ -29,6 +29,10 @@ const soundButton = document.querySelector('#sound-button');
 const timerPauseButton = document.querySelector('#timer-pause');
 const timerDisableButton = document.querySelector('#timer-disable');
 const startGameButton = document.querySelector('#start-game-button');
+const recordsDialog = document.querySelector('#records-dialog');
+const recordsList = document.querySelector('#records-list');
+const recordsEmpty = document.querySelector('#records-empty');
+const shareStatus = document.querySelector('#share-status');
 const installButton = document.querySelector('#install-app');
 const installGuide = document.querySelector('#install-guide');
 const installGuideText = document.querySelector('#install-guide-text');
@@ -47,6 +51,7 @@ const screenHashes = {
   'game-screen': '#oyun'
 };
 const hashScreens = Object.fromEntries(Object.entries(screenHashes).map(([screen, hash]) => [hash, screen]));
+document.documentElement.classList.toggle('touch-device', 'ontouchstart' in window || navigator.maxTouchPoints > 0);
 const provinceAliases = {
   afyon: 'afyonkarahisar',
   urfa: 'sanliurfa',
@@ -93,6 +98,41 @@ function formatTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
   const seconds = (totalSeconds % 60).toString().padStart(2, '0');
   return `${minutes}:${seconds}`;
+}
+
+function loadRecords() {
+  try {
+    const records = JSON.parse(localStorage.getItem('turkiye-harita-sureleri') || '[]');
+    return Array.isArray(records) ? records : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRecords(records) {
+  localStorage.setItem('turkiye-harita-sureleri', JSON.stringify(records.slice(-50)));
+}
+
+function renderRecords() {
+  const records = loadRecords()
+    .filter((record) => modeMeta[record.mode] && Number.isFinite(Number(record.seconds)))
+    .sort((a, b) => new Date(b.savedAt || 0) - new Date(a.savedAt || 0));
+  recordsEmpty.hidden = records.length > 0;
+  document.querySelector('#records-clear').hidden = records.length === 0;
+  const bestByMode = new Map();
+  records.forEach((record) => {
+    const completed = Number(record.completed ?? 81);
+    if (completed !== 81) return;
+    const current = bestByMode.get(record.mode);
+    if (!current || Number(record.seconds) < Number(current.seconds)) bestByMode.set(record.mode, record);
+  });
+  recordsList.innerHTML = records.slice(0, 20).map((record) => {
+    const completed = Number(record.completed ?? 81);
+    const isBest = bestByMode.get(record.mode) === record;
+    const date = record.savedAt ? new Intl.DateTimeFormat('tr-TR', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(record.savedAt)) : 'Tarih yok';
+    const detail = completed === 81 ? `81 / 81 il · ${date}` : `${completed} / 81 il · ${81 - completed} eksik · ${date}`;
+    return `<div class="record-row${isBest ? ' record-best' : ''}"><strong>${modeMeta[record.mode].title}${isBest ? ' · En iyi' : ''}</strong><span>${formatTime(Number(record.seconds))}</span><small>${detail}</small></div>`;
+  }).join('');
 }
 
 function currentElapsed() {
@@ -419,6 +459,7 @@ function resetGame(mode = state.mode) {
   document.querySelector('#exit-dialog').hidden = true;
   document.querySelector('#save-time-prompt').hidden = false;
   document.querySelector('#save-time-status').textContent = '';
+  shareStatus.textContent = '';
   document.querySelectorAll('#save-time-prompt button').forEach((button) => { button.disabled = false; });
   const meta = modeMeta[mode];
   document.querySelector('#mode-kicker').textContent = `OYUN ${meta.number}`;
@@ -502,16 +543,49 @@ function answerSaveTime(shouldSave) {
   const status = document.querySelector('#save-time-status');
   if (shouldSave) {
     try {
-      const records = JSON.parse(localStorage.getItem('turkiye-harita-sureleri') || '[]');
+      const records = loadRecords();
       const missing = state.provinces.filter((province) => !state.completed.has(province.plate)).map((province) => province.name);
       records.push({ mode: state.mode, seconds: state.elapsed, completed: state.completed.size, missing, partial: state.partialFinish, savedAt: new Date().toISOString() });
-      localStorage.setItem('turkiye-harita-sureleri', JSON.stringify(records.slice(-50)));
+      saveRecords(records);
       status.textContent = state.partialFinish ? 'İlerlemeniz ve süreniz bu cihazda kaydedildi.' : 'Süreniz bu cihazda kaydedildi.';
     } catch {
       status.textContent = 'Süre kaydedilemedi. Tarayıcı depolamasını kontrol edin.';
     }
   } else status.textContent = 'Süreniz kaydedilmedi.';
   document.querySelectorAll('#save-time-prompt button').forEach((button) => { button.disabled = true; });
+}
+
+function resultShareText() {
+  const modeName = modeMeta[state.mode]?.title || 'Türkiye Harita Oyunu';
+  const timeText = state.timerEnabled ? ` ${formatTime(state.elapsed)} sürede` : '';
+  return `Türkiye Harita Oyunu · ${modeName} modunda${timeText} ${state.completed.size} / 81 ili tamamladım. Sen de kendini test et!`;
+}
+
+async function shareResult() {
+  const url = 'https://fetiicolak.github.io/Turkiye-harita-oyunu/';
+  const text = resultShareText();
+  shareStatus.textContent = '';
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: 'Türkiye Harita Oyunu', text, url });
+      shareStatus.textContent = 'Paylaşım menüsü açıldı.';
+      return;
+    }
+    await navigator.clipboard.writeText(`${text}\n${url}`);
+    shareStatus.textContent = 'Sonuç ve oyun bağlantısı panoya kopyalandı.';
+  } catch (error) {
+    if (error?.name === 'AbortError') return;
+    const textarea = document.createElement('textarea');
+    textarea.value = `${text}\n${url}`;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.append(textarea);
+    textarea.select();
+    const copied = document.execCommand('copy');
+    textarea.remove();
+    shareStatus.textContent = copied ? 'Sonuç ve oyun bağlantısı panoya kopyalandı.' : 'Paylaşım hazırlanamadı. Tekrar deneyin.';
+  }
 }
 
 document.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => showScreen(button.dataset.next)));
@@ -533,6 +607,20 @@ document.querySelector('#finish-menu').addEventListener('click', () => navigateB
 startGameButton.addEventListener('click', beginGame);
 document.querySelector('#save-time-yes').addEventListener('click', () => answerSaveTime(true));
 document.querySelector('#save-time-no').addEventListener('click', () => answerSaveTime(false));
+document.querySelector('#share-result').addEventListener('click', shareResult);
+document.querySelector('#records-button').addEventListener('click', () => {
+  renderRecords();
+  recordsDialog.hidden = false;
+});
+document.querySelector('#records-close').addEventListener('click', () => { recordsDialog.hidden = true; });
+recordsDialog.addEventListener('click', (event) => {
+  if (event.target === recordsDialog) recordsDialog.hidden = true;
+});
+document.querySelector('#records-clear').addEventListener('click', () => {
+  if (!window.confirm('Bu cihazdaki tüm süre kayıtları silinsin mi?')) return;
+  localStorage.removeItem('turkiye-harita-sureleri');
+  renderRecords();
+});
 soundButton.addEventListener('click', speakCurrent);
 timerPauseButton.addEventListener('click', () => {
   if (!state.timerEnabled || state.finished) return;

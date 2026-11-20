@@ -13,6 +13,16 @@ const required = [
   'dist/assets/ataturk-portre.png',
   'dist/assets/kapak-turkiye-kure.png',
   'dist/assets/kapak-turkiye-kure-mobil.png',
+  'dist/assets/linkedin-preview.png',
+  'LICENSE',
+  'playwright.config.mjs',
+  'tests/app.spec.mjs',
+  'docs/demo/turkiye-harita-oyunu-linkedin.mp4',
+  'docs/screenshots/ana-sayfa.png',
+  'docs/screenshots/oyun-secimi.png',
+  'docs/screenshots/oyun-ekrani.png',
+  'docs/screenshots/mobil-oyun-secimi.png',
+  'docs/linkedin-post.md',
   '.openai/hosting.json'
 ];
 
@@ -26,6 +36,10 @@ for (const [file, expectedSize] of [['dist/assets/app-icon-192.png', 192], ['dis
   if (png.toString('ascii', 1, 4) !== 'PNG' || png.readUInt32BE(16) !== expectedSize || png.readUInt32BE(20) !== expectedSize) {
     throw new Error(`PNG ikon boyutu hatalı: ${file}`);
   }
+}
+const socialPreview = await readFile('dist/assets/linkedin-preview.png');
+if (socialPreview.readUInt32BE(16) !== 1200 || socialPreview.readUInt32BE(20) !== 627) {
+  throw new Error('LinkedIn sosyal önizleme görseli 1200×627 değil.');
 }
 
 const geo = JSON.parse(await readFile('dist/assets/turkiye_iller.geojson', 'utf8'));
@@ -47,11 +61,14 @@ if (!html.includes('rel="manifest"') || !html.includes('id="install-app"')) {
 }
 if (html.includes('favicon.svg') || html.includes('app-icon.svg')) throw new Error('Eski SVG ikon bağlantısı hâlâ HTML içinde.');
 if ((html.match(/data-mode=/g) ?? []).length !== 4) throw new Error('Dört oyun modu kartı bulunamadı.');
-for (const id of ['timer-pause', 'timer-disable', 'tribute-map', 'start-game-button', 'save-time-prompt', 'exit-button', 'exit-dialog', 'finish-missing']) {
+for (const id of ['timer-pause', 'timer-disable', 'tribute-map', 'start-game-button', 'save-time-prompt', 'exit-button', 'exit-dialog', 'finish-missing', 'records-button', 'records-dialog', 'share-result']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Yeni arayüz denetimi eksik: ${id}`);
 }
-if (!html.includes('styles.css?v=10') || !html.includes('app.js?v=10')) {
+if (!html.includes('styles.css?v=11') || !html.includes('app.js?v=11')) {
   throw new Error('Güncel önbellek sürümü HTML bağlantılarına eklenmemiş.');
+}
+for (const meta of ['og:title', 'og:description', 'og:image', 'og:url', 'twitter:card']) {
+  if (!html.includes(meta)) throw new Error(`Sosyal paylaşım meta etiketi eksik: ${meta}`);
 }
 if (html.includes('<datalist') || html.includes('list="province-list"')) {
   throw new Error('Şehir öneri listesi kaldırılmamış.');
@@ -73,7 +90,7 @@ for (const behavior of ["querySelectorAll('[data-mode]')", 'mapReadyPromise', "a
 for (const behavior of ["addEventListener('popstate'", "querySelectorAll('[data-back]')", 'navigateBack']) {
   if (!app.includes(behavior)) throw new Error(`Sayfa geçmişi davranışı eksik: ${behavior}`);
 }
-for (const behavior of ['function beginGame()', 'provinceAliases', 'p.plate > province.plate', 'title.textContent = province.name', "localStorage.setItem('turkiye-harita-sureleri'", 'finishGame({ partial: true })', 'swipeRoutes']) {
+for (const behavior of ['function beginGame()', 'provinceAliases', 'p.plate > province.plate', 'title.textContent = province.name', "localStorage.setItem('turkiye-harita-sureleri'", 'finishGame({ partial: true })', 'swipeRoutes', 'function renderRecords()', 'navigator.share', 'navigator.clipboard.writeText']) {
   if (!app.includes(behavior)) throw new Error(`Yeni oyun davranışı eksik: ${behavior}`);
 }
 if (!app.includes("if (!state.gameStarted) {\n    navigateBack('mode-screen')")) {

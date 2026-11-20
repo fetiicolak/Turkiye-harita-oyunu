@@ -1,48 +1,76 @@
 # Türkiye Harita Oyunu
 
-Türkiye'nin 81 ilini eğlenerek öğrenebileceğiniz, telefon ve bilgisayarda çalışan ücretsiz bir harita oyunudur.
+![Türkiye Harita Oyunu sosyal paylaşım kapağı](dist/assets/linkedin-preview.png)
 
-## Oyunu aç
+Türkiye'nin 81 ilini dört farklı oyunla öğrenebileceğiniz; telefon, tablet ve bilgisayarda çalışan, kurulabilir ve çevrimdışı kullanılabilir bir PWA.
 
-[Türkiye Harita Oyunu'nu oyna](https://fetiicolak.github.io/Turkiye-harita-oyunu/)
+[Oyunu oyna](https://fetiicolak.github.io/Turkiye-harita-oyunu/) · [17 saniyelik demo videosu](docs/demo/turkiye-harita-oyunu-linkedin.mp4) · [Hazır LinkedIn paylaşım metni](docs/linkedin-post.md)
 
-## Dört farklı oyun
+## Öne çıkanlar
+
+- Gerçek il sınırlarından tarayıcıda oluşturulan etkileşimli SVG Türkiye haritası
+- Dört farklı oyun modu ve 81 ilin tamamı
+- Kullanıcının **Başla** düğmesiyle kontrol ettiği süre
+- Süreyi durdurma, devam ettirme ve kapatma
+- Kişisel rekorları cihazda saklama ve görüntüleme
+- Sonucu telefonun paylaşım menüsüyle paylaşma veya panoya kopyalama
+- Klavye, fare, dokunmatik ekran ve tablet kaydırma desteği
+- PWA olarak kurulum ve çevrimdışı çalışma
+
+## Dört oyun modu
 
 - **Seç & Bil:** Haritada bir ile dokunun ve ilin adını tahmin edin.
 - **81'i Doldur:** Bildiğiniz il isimlerini yazarak dilsiz haritayı doldurun.
 - **Dinle & Bul:** Sesli söylenen ili haritada seçin. Üç yanlış seçimden sonra doğru konum parlar.
 - **Plaka Ustası:** 1–81 arasındaki plaka kodlarını doğru illerle eşleştirin.
 
-## Süreyi kontrol et
+`Afyon`, `Urfa`, `Antep`, `Maraş`, `İçel`, `İzmit` ve `Adapazarı` gibi yaygın kısa veya eski kullanımlar da kabul edilir.
 
-Bir oyunu seçtikten sonra sol paneldeki **Başla** düğmesine basın; süre tam o anda çalışmaya başlar. Oyun ekranının üst kısmındaki seçeneklerle süreyi durdurabilir, kaldığınız yerden devam ettirebilir veya kapatabilirsiniz. Oyun bittiğinde sürenizi isterseniz kullandığınız cihaza kaydedebilirsiniz.
+## Ekran görüntüleri
 
-Oyunu 81 ili tamamlamadan bırakmak için **Çıkış** düğmesini kullanabilirsiniz. İlerlemenizi sonuç olarak bitirirseniz tamamlanan ve eksik kalan iller gösterilir; ilerleme ve süre yalnızca onay verirseniz cihazınıza kaydedilir. **Kaydetmeden çık** seçeneği doğrudan oyun seçimine döner.
+| Oyun seçimi | Oyun ekranı |
+| --- | --- |
+| ![Dört oyun modu](docs/screenshots/oyun-secimi.png) | ![81'i Doldur oyun ekranı](docs/screenshots/oyun-ekrani.png) |
 
-Şehir cevapları yalnızca serbest metin olarak yazılır; uygulama şehir listesini göstermez. `Afyon`, `Urfa`, `Antep`, `Maraş`, `İçel`, `İzmit` ve `Adapazarı` gibi yaygın kısa veya eski kullanımlar da kabul edilir.
+### Mobil görünüm
 
-## Sayfalar arasında gezin
+![Mobil oyun seçimi](docs/screenshots/mobil-oyun-secimi.png)
 
-Sayfaların sağ üstündeki **Önceki sayfa** ve **Sonraki sayfa** düğmelerini veya tarayıcınızın geri ve ileri düğmelerini kullanabilirsiniz. Bilgisayarda ana sayfa ve Atatürk sayfasında herhangi bir tuşa basarak ilerleyebilirsiniz. Telefonda sola kaydırarak ilerleyebilir, sağa kaydırarak önceki sayfaya dönebilirsiniz.
+## Süre, kayıt ve paylaşım
 
-Harita üzerinde imleci bir ilin üzerine getirdiğinizde ilin adı bütün oyun modlarında gösterilir.
+Bir oyunu seçtikten sonra sol paneldeki **Başla** düğmesi süreyi ve oyun etkileşimlerini etkinleştirir. Oyun tamamlandığında süre cihazın yerel tarayıcı depolamasına kaydedilebilir ve **Kişisel Rekorlarım** penceresinden görüntülenebilir.
 
-## Uygulama olarak yükle
+Oyunu erken bitirirseniz tamamlanan ve eksik kalan iller gösterilir. **Sonucu paylaş** düğmesi Web Share API destekli cihazlarda paylaşım menüsünü açar; diğer tarayıcılarda sonucu ve oyun bağlantısını panoya kopyalar.
 
-Sitedeki **Uygulamayı indir** düğmesini kullanarak oyunu desteklenen cihazlarda ana ekrana ekleyebilirsiniz. Kurulduktan sonra daha önce açılmış oyun dosyaları çevrimdışı da kullanılabilir.
+Kayıtlar sunucuya gönderilmez ve hesap gerektirmez.
 
-## Geliştiriciler için
+## Teknolojiler
 
-Proje, derleme gerektirmeyen statik HTML, CSS ve JavaScript kullanır. Yerel olarak çalıştırmak için:
+- HTML5, CSS3 ve Vanilla JavaScript
+- SVG ve GeoJSON
+- Service Worker ve Web App Manifest
+- Web Speech API, Web Share API ve Local Storage
+- GitHub Actions ve GitHub Pages
+- Playwright ile masaüstü, mobil ve tablet smoke testleri
+
+## Yerel geliştirme
 
 ```powershell
-npx serve dist
+npm install
+npx playwright install chromium
+npm start
 ```
 
-Otomatik kontrolleri çalıştırmak için:
+Statik ve tarayıcı kontrollerinin tamamını çalıştırmak için:
 
 ```powershell
-npm run check
+npm test
+```
+
+README ekran görüntülerini ve LinkedIn demo videosunu yeniden üretmek için:
+
+```powershell
+npm run capture:showcase
 ```
 
 Teknik kararların geçmişi [Chat.md](Chat.md) dosyasında tutulur.
@@ -51,5 +79,8 @@ Teknik kararların geçmişi [Chat.md](Chat.md) dosyasında tutulur.
 
 - İl sınırları: OpenStreetMap katkıcıları ve `theaiagent/turkiye_iller_geojson` (ODbL 1.0).
 - Atatürk portresi: `maliozer/ataturk_blackwhite_portrait` (MIT).
-- PWA uygulama ikonu ve favicon: OpenAI ImageGen ile proje için üretilmiştir.
+- Projeye özel kapaklar, sosyal önizleme ve uygulama ikonları: OpenAI ImageGen.
 
+## Lisans
+
+Uygulama kaynak kodu [MIT Lisansı](LICENSE) ile yayımlanır. Harita verisi ve üçüncü taraf görseller kendi lisanslarına tabidir.
