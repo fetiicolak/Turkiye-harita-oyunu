@@ -5,6 +5,8 @@ test('tanıtım akışı ve başlamamış oyundan doğrudan çıkış çalışı
   await expect(page.locator('#welcome-screen')).toHaveClass(/is-active/);
   await page.keyboard.press('A');
   await expect(page.locator('#tribute-screen')).toHaveClass(/is-active/);
+  await expect(page.locator('#tribute-map .province')).toHaveCount(81);
+  await expect.poll(() => page.locator('#tribute-screen').evaluate((element) => getComputedStyle(element).backgroundImage)).toContain('ataturk-portre.webp');
   await page.keyboard.press('A');
   await expect(page.locator('#mode-screen')).toHaveClass(/is-active/);
   await page.locator('[data-mode="locate"]').click();
@@ -135,6 +137,10 @@ test('tablet dokunma hareketiyle sayfalar arasında ilerler ve geri döner', asy
 test('masaüstünde kaydırma açıklamaları gizlidir ve sosyal etiketler hazırdır', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.screen-nav button small').last()).toBeHidden();
+  await expect(page.locator('link[rel="preload"][href="assets/kapak-turkiye-kure.webp"]')).toHaveCount(1);
+  await expect(page.locator('link[rel="preload"][href="assets/ataturk-portre.webp"]')).toHaveCount(1);
+  await expect(page.locator('link[rel="preload"][href="assets/turkiye_iller.geojson"]')).toHaveCount(1);
+  await expect.poll(() => page.locator('#welcome-screen').evaluate((element) => getComputedStyle(element).backgroundImage)).toContain('kapak-turkiye-kure.webp');
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /linkedin-preview\.png$/);
   await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
 });

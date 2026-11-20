@@ -64,7 +64,7 @@ if ((html.match(/data-mode=/g) ?? []).length !== 4) throw new Error('Dört oyun 
 for (const id of ['timer-pause', 'timer-disable', 'tribute-map', 'start-game-button', 'save-time-prompt', 'exit-button', 'exit-dialog', 'finish-missing', 'records-button', 'records-dialog', 'share-result']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Yeni arayüz denetimi eksik: ${id}`);
 }
-if (!html.includes('styles.css?v=11') || !html.includes('app.js?v=11')) {
+if (!html.includes('styles.css?v=12') || !html.includes('app.js?v=12')) {
   throw new Error('Güncel önbellek sürümü HTML bağlantılarına eklenmemiş.');
 }
 for (const meta of ['og:title', 'og:description', 'og:image', 'og:url', 'twitter:card']) {

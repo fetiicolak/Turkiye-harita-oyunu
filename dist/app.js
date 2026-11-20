@@ -73,7 +73,8 @@ function provinceMatches(province, value) {
   return province.normalized === answer || province.normalized === provinceAliases[answer];
 }
 
-function showScreen(id, { historyAction = 'push' } = {}) {
+async function showScreen(id, { historyAction = 'push' } = {}) {
+  if (id === 'tribute-screen') await tributeReadyPromise;
   const activeScreen = document.querySelector('.screen.is-active');
   if (activeScreen?.id === 'game-screen' && id !== 'game-screen') {
     stopTimer();
@@ -772,6 +773,20 @@ Object.entries(swipeRoutes).forEach(([screenId, routes]) => {
   }, { passive: true });
 });
 
+async function decodeImage(src, fallbackSrc) {
+  const image = new Image();
+  image.src = src;
+  try {
+    await image.decode?.();
+  } catch {
+    if (!fallbackSrc) return;
+    const fallbackImage = new Image();
+    fallbackImage.src = fallbackSrc;
+    await fallbackImage.decode?.().catch(() => undefined);
+  }
+}
+
+const tributePortraitReadyPromise = decodeImage('assets/ataturk-portre.webp', 'assets/ataturk-portre.png');
 const mapReadyPromise = fetch('assets/turkiye_iller.geojson')
   .then((response) => {
     if (!response.ok) throw new Error('Harita verisi yüklenemedi.');
@@ -783,5 +798,6 @@ const mapReadyPromise = fetch('assets/turkiye_iller.geojson')
     console.error(error);
     throw error;
   });
+const tributeReadyPromise = Promise.allSettled([tributePortraitReadyPromise, mapReadyPromise]);
 
 showScreen(hashScreens[window.location.hash] || 'welcome-screen', { historyAction: 'replace' });

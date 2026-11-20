@@ -25,6 +25,7 @@ Bu dosya, geliştirme sırasında alınan önemli teknik ve ürün kararlarını
 - Sonuç ekranı Web Share API ile cihazın paylaşım menüsünü açar; desteklenmeyen tarayıcılarda sonuç metni ve oyun bağlantısı panoya kopyalanır.
 - Playwright smoke testleri ana akışı, dört oyun modunu, başlamamış oyundan çıkışı, rekorları, tablet kaydırmasını, sosyal meta etiketlerini ve 81 il tamamlamasını sınar. GitHub Pages yayını bu testler geçmeden yapılmaz.
 - README vitrini gerçek uygulama ekran görüntüleri ve 17,7 saniyelik MP4 demo içerir. Kaynak kod MIT lisanslıdır; harita verisi ve üçüncü taraf görseller kendi lisanslarını korur.
+- Ana sayfa ve Atatürk arka planları WebP olarak önceden yüklenir; PNG dosyaları uyumluluk yedeğidir. Atatürk ekranı portre çözülüp harita çizilmeden gösterilmez.
 - PWA önbelleği güncellemelerde sürümlenir ve uygulama dosyalarında ağ öncelikli strateji kullanılır. Bu karar, eski JavaScript’in oyunları bozmasını önlemek içindir.
 
 ## Görsel kararlar

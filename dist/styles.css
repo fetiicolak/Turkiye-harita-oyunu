@@ -50,7 +50,12 @@ button { cursor: pointer; }
 
 .welcome-screen {
   position: relative; overflow: hidden; align-items: center; padding: clamp(2rem, 6vw, 6rem);
-  background: #f3dfbc url('assets/kapak-turkiye-kure.png') center/cover no-repeat;
+  background-color: #f3dfbc;
+  background-image: url('assets/kapak-turkiye-kure.png');
+  background-image: image-set(url('assets/kapak-turkiye-kure.webp') type('image/webp'), url('assets/kapak-turkiye-kure.png') type('image/png'));
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 .welcome-screen::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(250,241,221,.32), transparent 56%); pointer-events: none; }
 .welcome-copy { position: relative; z-index: 2; width: min(800px, 92%); }
@@ -62,7 +67,7 @@ button { cursor: pointer; }
 .mobile-copy { display: none; }
 .turkey-word { position: absolute; z-index: 2; right: 2vw; bottom: 1.6vw; color: #174b42; font: 900 clamp(4.5rem, 13vw, 12.5rem)/.82 var(--sans); letter-spacing: -.07em; transform: perspective(600px) rotateX(7deg); -webkit-text-stroke: 1px rgba(232,189,103,.7); text-shadow: 0 1px 0 #d7aa55, 0 3px 0 #b78b3d, 0 6px 0 #816225, 0 13px 22px rgba(24,55,46,.34), 0 0 2px #fff8e8; }
 
-.tribute-screen { position: relative; align-items: center; padding: clamp(2rem, 8vw, 8rem); overflow: hidden; background: #191b18 url('assets/ataturk-portre.png') right 12% bottom/auto 112% no-repeat; color: white; }
+.tribute-screen { position: relative; align-items: center; padding: clamp(2rem, 8vw, 8rem); overflow: hidden; background-color: #191b18; background-image: url('assets/ataturk-portre.png'); background-image: image-set(url('assets/ataturk-portre.webp') type('image/webp'), url('assets/ataturk-portre.png') type('image/png')); background-position: right 12% bottom; background-size: auto 112%; background-repeat: no-repeat; color: white; }
 .tribute-screen::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(15,18,16,.99) 0%, rgba(19,22,19,.9) 39%, rgba(18,20,17,.14) 78%), radial-gradient(circle at 64% 52%, rgba(184,36,45,.25), transparent 42%); }
 .tribute-map { position: absolute; z-index: 1; right: 4%; top: 50%; width: min(72vw, 1100px); height: auto; transform: translateY(-50%) rotate(-2deg); opacity: .38; filter: drop-shadow(0 0 22px rgba(225,74,83,.28)); }
 .tribute-map .province { fill: rgba(130,27,34,.42); stroke: rgba(241,201,185,.55); stroke-width: .8; pointer-events: none; }
@@ -230,7 +235,7 @@ button { cursor: pointer; }
 }
 
 @media (max-width: 1180px) and (orientation: portrait) {
-  .welcome-screen { align-items: flex-end; padding-bottom: 5vh; background-image: url('assets/kapak-turkiye-kure-mobil.png'); background-position: center top; background-size: cover; }
+  .welcome-screen { align-items: flex-end; padding-bottom: 5vh; background-image: url('assets/kapak-turkiye-kure-mobil.png'); background-image: image-set(url('assets/kapak-turkiye-kure-mobil.webp') type('image/webp'), url('assets/kapak-turkiye-kure-mobil.png') type('image/png')); background-position: center top; background-size: cover; }
   .welcome-screen::before { background: linear-gradient(0deg, rgba(250,241,221,.98) 0%, rgba(250,241,221,.72) 47%, rgba(250,241,221,.06) 86%); }
   .welcome-copy { width: min(780px, 100%); }
   .turkey-word { right: 3vw; top: 5.25rem; bottom: auto; font-size: clamp(4rem, 14vw, 7.5rem); opacity: .92; }
@@ -249,7 +254,7 @@ button { cursor: pointer; }
 @media (max-width: 640px) {
   .install-app { top: auto; right: max(.75rem, env(safe-area-inset-right)); bottom: max(.75rem, env(safe-area-inset-bottom)); }
   .install-guide { top: auto; right: .75rem; bottom: calc(max(.75rem, env(safe-area-inset-bottom)) + 3.7rem); }
-  .welcome-screen { align-items: flex-end; padding-bottom: 4vh; background-image: url('assets/kapak-turkiye-kure-mobil.png'); background-position: center top; background-size: cover; }
+  .welcome-screen { align-items: flex-end; padding-bottom: 4vh; background-image: url('assets/kapak-turkiye-kure-mobil.png'); background-image: image-set(url('assets/kapak-turkiye-kure-mobil.webp') type('image/webp'), url('assets/kapak-turkiye-kure-mobil.png') type('image/png')); background-position: center top; background-size: cover; }
   .welcome-screen::before { background: linear-gradient(0deg, rgba(250,241,221,.98) 0%, rgba(250,241,221,.78) 48%, rgba(250,241,221,.08) 88%); }
   .welcome-copy { width: 100%; }
   .welcome-copy h1 { font-size: clamp(2.55rem, 12vw, 4.2rem); }

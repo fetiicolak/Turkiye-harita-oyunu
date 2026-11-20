@@ -26,7 +26,11 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="assets/app-icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=11">
+  <link rel="preload" as="image" href="assets/kapak-turkiye-kure.webp" type="image/webp" media="(min-width: 1181px), (min-width: 641px) and (orientation: landscape)" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/kapak-turkiye-kure-mobil.webp" type="image/webp" media="(max-width: 640px), (max-width: 1180px) and (orientation: portrait)" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/ataturk-portre.webp" type="image/webp" fetchpriority="low">
+  <link rel="preload" as="fetch" href="assets/turkiye_iller.geojson" crossorigin fetchpriority="low">
+  <link rel="stylesheet" href="styles.css?v=12">
 </head>
 <body>
   <main id="app">
@@ -214,6 +218,6 @@
     <strong>Ana ekrana ekle</strong>
     <p id="install-guide-text">Tarayıcı menüsünü açıp “Uygulamayı yükle” seçeneğini kullan.</p>
   </div>
-  <script src="app.js?v=11" defer></script>
+  <script src="app.js?v=12" defer></script>
 </body>
 </html>
