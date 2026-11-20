@@ -189,7 +189,7 @@ function playListenFeedback(isCorrect) {
       oscillator.type = isCorrect ? 'sine' : 'triangle';
       oscillator.frequency.setValueAtTime(frequency, start);
       gain.gain.setValueAtTime(.0001, start);
-      gain.gain.exponentialRampToValueAtTime(isCorrect ? .16 : .13, start + .015);
+      gain.gain.exponentialRampToValueAtTime(isCorrect ? .28 : .23, start + .015);
       gain.gain.exponentialRampToValueAtTime(.0001, start + noteLength);
       oscillator.connect(gain);
       gain.connect(feedbackAudioContext.destination);
