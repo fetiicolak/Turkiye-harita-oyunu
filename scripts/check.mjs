@@ -8,6 +8,7 @@ const required = [
   'dist/sw.js',
   'dist/assets/app-icon.svg',
   'dist/assets/app-icon-maskable.svg',
+  'dist/assets/favicon.svg',
   'dist/assets/turkiye_iller.geojson',
   'dist/assets/ataturk-portre.png',
   'dist/assets/kapak-turkiye-kure.png',
@@ -40,6 +41,9 @@ if ((html.match(/data-mode=/g) ?? []).length !== 4) throw new Error('Dört oyun 
 for (const id of ['timer-pause', 'timer-disable', 'tribute-map']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Yeni arayüz denetimi eksik: ${id}`);
 }
+if (!html.includes('styles.css?v=4') || !html.includes('app.js?v=4')) {
+  throw new Error('Güncel önbellek sürümü HTML bağlantılarına eklenmemiş.');
+}
 for (const removedText of ['Her mod 81 ilin tamamıyla oynanır', 'İpucu: Türkçe karakter', 'Portre: maliozer']) {
   if (html.includes(removedText)) throw new Error(`Kaldırılması istenen metin hâlâ sayfada: ${removedText}`);
 }
@@ -48,11 +52,15 @@ const app = await readFile('dist/app.js', 'utf8');
 for (const behavior of ["querySelectorAll('[data-mode]')", 'mapReadyPromise', "addEventListener('touchend'", 'timerPauseButton.addEventListener']) {
   if (!app.includes(behavior)) throw new Error(`Etkileşim davranışı eksik: ${behavior}`);
 }
+for (const behavior of ["addEventListener('popstate'", "querySelectorAll('[data-back]')", 'navigateBack']) {
+  if (!app.includes(behavior)) throw new Error(`Sayfa geçmişi davranışı eksik: ${behavior}`);
+}
 
 const styles = await readFile('dist/styles.css', 'utf8');
 if (!styles.includes('@media (min-width: 1001px)') || !styles.includes('overflow: hidden')) {
   throw new Error('Masaüstü tam ekran düzeni bulunamadı.');
 }
+if (!styles.includes('.finish-dialog[hidden]')) throw new Error('Sonuç penceresinin gizleme düzeltmesi eksik.');
 
 const manifest = JSON.parse(await readFile('dist/manifest.webmanifest', 'utf8'));
 if (manifest.display !== 'standalone' || !manifest.start_url || manifest.icons?.length < 2) {

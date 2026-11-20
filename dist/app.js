@@ -36,14 +36,38 @@ const modeMeta = {
   listen: { number: '03', title: 'Dinle & Bul', description: 'Söylenen ili haritada bul. Üç yanlış seçimden sonra konumu parlayacak.', prompt: 'Söylenen şehri haritada seç' },
   plate: { number: '04', title: 'Plaka Ustası', description: 'Bir plaka kodu seç ve karşılık gelen il adını yaz.', prompt: 'Plaka seç, il adını yaz' }
 };
+const screenHashes = {
+  'welcome-screen': '#anasayfa',
+  'tribute-screen': '#ataturk',
+  'mode-screen': '#oyunlar',
+  'game-screen': '#oyun'
+};
+const hashScreens = Object.fromEntries(Object.entries(screenHashes).map(([screen, hash]) => [hash, screen]));
 
 function normalizeName(value = '') {
   return value.trim().toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ı/g, 'i').replace(/[^a-z0-9]/g, '');
 }
 
-function showScreen(id) {
+function showScreen(id, { historyAction = 'push' } = {}) {
+  const activeScreen = document.querySelector('.screen.is-active');
+  if (activeScreen?.id === 'game-screen' && id !== 'game-screen') {
+    stopTimer();
+    window.speechSynthesis?.cancel?.();
+  }
   screens.forEach((screen) => screen.classList.toggle('is-active', screen.id === id));
+  if (id === 'game-screen' && state.mode && !state.finished) startTimer();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (historyAction !== 'none') {
+    const currentDepth = Number(window.history.state?.appDepth ?? 0);
+    const nextDepth = historyAction === 'replace' ? currentDepth : currentDepth + 1;
+    const method = historyAction === 'replace' ? 'replaceState' : 'pushState';
+    window.history[method]({ screen: id, appDepth: nextDepth }, '', screenHashes[id]);
+  }
+}
+
+function navigateBack(fallbackScreen) {
+  if (Number(window.history.state?.appDepth ?? 0) > 0) window.history.back();
+  else showScreen(fallbackScreen, { historyAction: 'replace' });
 }
 
 function formatTime(totalSeconds) {
@@ -409,11 +433,12 @@ function finishGame() {
 }
 
 document.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => showScreen(button.dataset.next)));
+document.querySelectorAll('[data-back]').forEach((button) => button.addEventListener('click', () => navigateBack(button.dataset.back)));
 document.querySelectorAll('[data-mode]').forEach((button) => button.addEventListener('click', () => startGame(button.dataset.mode)));
-document.querySelector('#back-button').addEventListener('click', () => { stopTimer(); window.speechSynthesis?.cancel?.(); showScreen('mode-screen'); });
+document.querySelector('#back-button').addEventListener('click', () => navigateBack('mode-screen'));
 document.querySelector('#restart-button').addEventListener('click', () => resetGame());
 document.querySelector('#finish-restart').addEventListener('click', () => resetGame());
-document.querySelector('#finish-menu').addEventListener('click', () => showScreen('mode-screen'));
+document.querySelector('#finish-menu').addEventListener('click', () => navigateBack('mode-screen'));
 soundButton.addEventListener('click', speakCurrent);
 timerPauseButton.addEventListener('click', () => {
   if (!state.timerEnabled || state.finished) return;
@@ -491,12 +516,16 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-let welcomeKeyEnabled = true;
 window.addEventListener('keydown', (event) => {
-  if (!welcomeKeyEnabled || !document.querySelector('#welcome-screen').classList.contains('is-active')) return;
+  if (!document.querySelector('#welcome-screen').classList.contains('is-active')) return;
   if (event.metaKey || event.ctrlKey || event.altKey) return;
-  welcomeKeyEnabled = false;
+  if (event.target.closest?.('button, input, textarea, select, a')) return;
   showScreen('tribute-screen');
+});
+
+window.addEventListener('popstate', (event) => {
+  const screen = event.state?.screen || hashScreens[window.location.hash] || 'welcome-screen';
+  showScreen(screen, { historyAction: 'none' });
 });
 
 let welcomeTouchStart = null;
@@ -524,3 +553,5 @@ const mapReadyPromise = fetch('assets/turkiye_iller.geojson')
     console.error(error);
     throw error;
   });
+
+showScreen(hashScreens[window.location.hash] || 'welcome-screen', { historyAction: 'replace' });

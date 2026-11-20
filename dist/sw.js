@@ -1,12 +1,13 @@
-const CACHE_NAME = 'turkiye-harita-oyunu-v3';
+const CACHE_NAME = 'turkiye-harita-oyunu-v4';
 const CORE_ASSETS = [
   './',
   './index.html',
-  './styles.css?v=3',
-  './app.js?v=3',
+  './styles.css?v=4',
+  './app.js?v=4',
   './manifest.webmanifest',
   './assets/app-icon.svg',
   './assets/app-icon-maskable.svg',
+  './assets/favicon.svg',
   './assets/ataturk-portre.png',
   './assets/kapak-turkiye-kure.png',
   './assets/turkiye_iller.geojson'

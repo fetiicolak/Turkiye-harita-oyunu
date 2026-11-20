@@ -11,9 +11,9 @@
   <meta name="apple-mobile-web-app-title" content="Harita Oyunu">
   <title>Türkiye Harita Oyunu</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="assets/app-icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="assets/app-icon.svg">
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
   <main id="app">
@@ -31,6 +31,9 @@
     </section>
 
     <section id="tribute-screen" class="screen tribute-screen" aria-labelledby="tribute-title">
+      <nav class="screen-nav screen-nav-light" aria-label="Sayfa gezinmesi">
+        <button type="button" data-back="welcome-screen">Ana sayfaya dön</button>
+      </nav>
       <svg id="tribute-map" class="tribute-map" viewBox="0 0 1000 500" aria-hidden="true"></svg>
       <div class="tribute-shade"></div>
       <div class="tribute-copy">
@@ -42,6 +45,9 @@
     </section>
 
     <section id="mode-screen" class="screen mode-screen" aria-labelledby="mode-title">
+      <nav class="screen-nav" aria-label="Sayfa gezinmesi">
+        <button type="button" data-back="tribute-screen">Atatürk sayfasına dön</button>
+      </nav>
       <header class="selection-header">
         <div>
           <p class="eyebrow">TÜRKİYE HARİTA OYUNU</p>
@@ -146,6 +152,6 @@
     <p id="install-guide-text">Tarayıcı menüsünü açıp “Uygulamayı yükle” seçeneğini kullan.</p>
   </div>
   <datalist id="province-list"></datalist>
-  <script src="app.js?v=3" defer></script>
+  <script src="app.js?v=4" defer></script>
 </body>
 </html>

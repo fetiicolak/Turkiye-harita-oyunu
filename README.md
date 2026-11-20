@@ -1,21 +1,45 @@
 # Türkiye Harita Oyunu
 
-Türkiye'nin 81 ilini dört farklı etkileşimli oyunla öğrenmeye yardımcı olan, mobil uyumlu bir web uygulaması.
+Türkiye'nin 81 ilini eğlenerek öğrenebileceğiniz, telefon ve bilgisayarda çalışan ücretsiz bir harita oyunudur.
 
-## Oyunlar
+## Oyunu aç
 
-- Haritada bir ili seçip adını tahmin et.
-- İl adlarını yazarak haritanın tamamını zamana karşı doldur.
-- Sesli söylenen ili haritada bul; üç hatadan sonra konum ipucunu gör.
-- 1–81 arasındaki plaka kodlarını doğru illerle eşleştir.
+[Türkiye Harita Oyunu'nu oyna](https://fetiicolak.github.io/Turkiye-harita-oyunu/)
 
-## Yerel çalıştırma
+## Dört farklı oyun
 
-`dist` klasörünü herhangi bir statik sunucuyla açın:
+- **Seç & Bil:** Haritada bir ile dokunun ve ilin adını tahmin edin.
+- **81'i Doldur:** Bildiğiniz il isimlerini yazarak dilsiz haritayı doldurun.
+- **Dinle & Bul:** Sesli söylenen ili haritada seçin. Üç yanlış seçimden sonra doğru konum parlar.
+- **Plaka Ustası:** 1–81 arasındaki plaka kodlarını doğru illerle eşleştirin.
+
+## Süreyi kontrol et
+
+Süre, bir oyunu açtığınız anda otomatik olarak başlar. Oyun ekranının üst kısmındaki seçeneklerle süreyi durdurabilir, kaldığınız yerden devam ettirebilir veya kapatabilirsiniz.
+
+## Sayfalar arasında gezin
+
+Sayfalardaki geri düğmelerini veya tarayıcınızın geri ve ileri düğmelerini kullanabilirsiniz. Telefonda ana sayfayı kaydırarak, bilgisayarda herhangi bir tuşa basarak başlayabilirsiniz.
+
+## Uygulama olarak yükle
+
+Sitedeki **Uygulamayı indir** düğmesini kullanarak oyunu desteklenen cihazlarda ana ekrana ekleyebilirsiniz. Kurulduktan sonra daha önce açılmış oyun dosyaları çevrimdışı da kullanılabilir.
+
+## Geliştiriciler için
+
+Proje, derleme gerektirmeyen statik HTML, CSS ve JavaScript kullanır. Yerel olarak çalıştırmak için:
 
 ```powershell
 npx serve dist
 ```
+
+Otomatik kontrolleri çalıştırmak için:
+
+```powershell
+npm run check
+```
+
+Teknik kararların geçmişi [Chat.md](Chat.md) dosyasında tutulur.
 
 ## Veri ve görsel kaynakları
 
