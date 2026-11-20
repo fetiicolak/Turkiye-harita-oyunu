@@ -29,7 +29,7 @@ button { cursor: pointer; }
 .screen-nav button { border: 1px solid rgba(18,38,32,.18); border-radius: 999px; padding: .65rem 1rem; background: rgba(255,253,247,.78); color: var(--ink); font-size: .78rem; font-weight: 700; backdrop-filter: blur(10px); transition: background .2s ease, color .2s ease, transform .2s ease; }
 .screen-nav button:hover { background: var(--ink); color: white; transform: translateY(-2px); }
 .screen-nav button > span { display: grid; gap: .12rem; }
-.screen-nav button small { color: inherit; font-size: .61rem; font-weight: 500; opacity: .72; }
+.screen-nav button small { display: none; color: inherit; font-size: .61rem; font-weight: 500; opacity: .72; }
 .screen-nav-light button { border-color: rgba(255,255,255,.3); background: rgba(12,20,17,.52); color: white; }
 .screen-nav-light button:hover { background: white; color: var(--ink); }
 .screen-nav button:disabled { opacity: .42; cursor: not-allowed; transform: none; }
@@ -216,7 +216,7 @@ button { cursor: pointer; }
 @media (max-width: 640px) {
   .install-app { top: auto; right: max(.75rem, env(safe-area-inset-right)); bottom: max(.75rem, env(safe-area-inset-bottom)); }
   .install-guide { top: auto; right: .75rem; bottom: calc(max(.75rem, env(safe-area-inset-bottom)) + 3.7rem); }
-  .welcome-screen { align-items: flex-end; padding-bottom: 16vh; background-position: right center; background-size: auto 80%; }
+  .welcome-screen { align-items: flex-end; padding-bottom: 16vh; background-image: url('assets/kapak-turkiye-kure-mobil.png'); background-position: center top; background-size: cover; }
   .welcome-screen::before { background: linear-gradient(0deg, rgba(250,241,221,.98) 0%, rgba(250,241,221,.78) 48%, rgba(250,241,221,.08) 88%); }
   .welcome-copy { width: 100%; }
   .welcome-copy h1 { font-size: clamp(2.55rem, 12vw, 4.2rem); }
@@ -226,6 +226,7 @@ button { cursor: pointer; }
   .turkey-word { right: 3vw; top: 4.5rem; bottom: auto; font-size: clamp(3.5rem, 18vw, 6rem); opacity: .92; }
   .screen-nav { top: max(.75rem, env(safe-area-inset-top)); right: max(.75rem, env(safe-area-inset-right)); }
   .screen-nav button { padding: .55rem .8rem; font-size: .72rem; }
+  .screen-nav button small { display: block; }
   .tribute-screen { align-items: end; padding-bottom: 12vh; background-position: 58% center; background-size: auto 92%; }
   .tribute-map { width: 130vw; right: -18%; top: 42%; opacity: .32; }
   .tribute-screen::after { background: linear-gradient(0deg, rgba(15,16,14,.98) 0%, rgba(20,20,18,.73) 48%, rgba(20,20,18,.08) 90%); }

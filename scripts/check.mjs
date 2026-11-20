@@ -12,6 +12,7 @@ const required = [
   'dist/assets/turkiye_iller.geojson',
   'dist/assets/ataturk-portre.png',
   'dist/assets/kapak-turkiye-kure.png',
+  'dist/assets/kapak-turkiye-kure-mobil.png',
   '.openai/hosting.json'
 ];
 
@@ -49,7 +50,7 @@ if ((html.match(/data-mode=/g) ?? []).length !== 4) throw new Error('Dört oyun 
 for (const id of ['timer-pause', 'timer-disable', 'tribute-map', 'start-game-button', 'save-time-prompt', 'exit-button', 'exit-dialog', 'finish-missing']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Yeni arayüz denetimi eksik: ${id}`);
 }
-if (!html.includes('styles.css?v=7') || !html.includes('app.js?v=7')) {
+if (!html.includes('styles.css?v=8') || !html.includes('app.js?v=8')) {
   throw new Error('Güncel önbellek sürümü HTML bağlantılarına eklenmemiş.');
 }
 if (html.includes('<datalist') || html.includes('list="province-list"')) {
@@ -81,8 +82,11 @@ if (!styles.includes('@media (min-width: 1001px)') || !styles.includes('overflow
   throw new Error('Masaüstü tam ekran düzeni bulunamadı.');
 }
 if (!styles.includes('.finish-dialog[hidden]')) throw new Error('Sonuç penceresinin gizleme düzeltmesi eksik.');
-if (!styles.includes('background-position: right center; background-size: auto 80%')) {
-  throw new Error('Mobil kapakta Türkiye’nin tamamını gösteren odak ayarı eksik.');
+if (!styles.includes("background-image: url('assets/kapak-turkiye-kure-mobil.png')") || !styles.includes('background-size: cover')) {
+  throw new Error('Mobil kapakta tam ekran dikey görsel ayarı eksik.');
+}
+if (!styles.includes('.screen-nav button small { display: none;') || !styles.includes('.screen-nav button small { display: block;')) {
+  throw new Error('Kaydırma açıklamalarının yalnızca mobilde gösterilmesi sağlanmamış.');
 }
 
 const manifest = JSON.parse(await readFile('dist/manifest.webmanifest', 'utf8'));
