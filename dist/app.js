@@ -38,6 +38,7 @@ const installGuide = document.querySelector('#install-guide');
 const installGuideText = document.querySelector('#install-guide-text');
 let deferredInstallPrompt = null;
 let exitTimerWasRunning = false;
+let feedbackAudioContext = null;
 const modeMeta = {
   locate: { number: '01', title: 'Seç & Bil', description: 'Haritada bir ile dokun, ardından seçtiğin ilin adını yaz.', prompt: 'Önce haritadan bir şehir seç' },
   fill: { number: '02', title: "81'i Doldur", description: 'Aklına gelen illeri yaz. Her doğru cevap haritada yeşile dönüşür.', prompt: 'Şehir adını yaz ve haritayı doldur' },
@@ -172,6 +173,34 @@ function setFeedback(message, type = '') {
   feedback.className = `feedback ${type}`.trim();
 }
 
+function playListenFeedback(isCorrect) {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return;
+  try {
+    feedbackAudioContext ||= new AudioContextClass();
+    if (feedbackAudioContext.state === 'suspended') feedbackAudioContext.resume();
+    const frequencies = isCorrect ? [523.25, 659.25, 783.99] : [220, 164.81];
+    const noteLength = isCorrect ? .11 : .16;
+    const now = feedbackAudioContext.currentTime;
+    frequencies.forEach((frequency, index) => {
+      const start = now + index * noteLength;
+      const oscillator = feedbackAudioContext.createOscillator();
+      const gain = feedbackAudioContext.createGain();
+      oscillator.type = isCorrect ? 'sine' : 'triangle';
+      oscillator.frequency.setValueAtTime(frequency, start);
+      gain.gain.setValueAtTime(.0001, start);
+      gain.gain.exponentialRampToValueAtTime(isCorrect ? .16 : .13, start + .015);
+      gain.gain.exponentialRampToValueAtTime(.0001, start + noteLength);
+      oscillator.connect(gain);
+      gain.connect(feedbackAudioContext.destination);
+      oscillator.start(start);
+      oscillator.stop(start + noteLength + .02);
+    });
+  } catch {
+    // Ses desteği olmayan veya ses çıkışını engelleyen tarayıcılarda oyun devam eder.
+  }
+}
+
 function clearMap() {
   map.querySelectorAll('.province').forEach((path) => path.className.baseVal = 'province');
   map.querySelectorAll('.map-label').forEach((label) => label.remove());
@@ -228,9 +257,6 @@ function buildMap() {
     path.setAttribute('tabindex', '0');
     path.setAttribute('role', 'button');
     path.setAttribute('aria-label', 'Haritadaki isimsiz il');
-    const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-    title.textContent = province.name;
-    path.append(title);
     path.addEventListener('click', () => handleProvinceClick(province));
     path.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); handleProvinceClick(province); }
@@ -270,6 +296,12 @@ function markComplete(province, withLabel = false) {
   path.classList.remove('wrong', 'selected', 'hint');
   path.classList.add('correct');
   path.setAttribute('aria-label', `${province.name}, tamamlandı`);
+  let title = path.querySelector('title');
+  if (!title) {
+    title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+    path.prepend(title);
+  }
+  title.textContent = province.name;
   if (withLabel) addPlateLabel(province);
   updateProgress();
   if (state.completed.size === 81) finishGame();
@@ -305,11 +337,13 @@ function handleProvinceClick(province) {
   } else if (state.mode === 'listen') {
     if (province.plate === state.current.plate) {
       markComplete(province);
+      playListenFeedback(true);
       setFeedback(`Doğru! ${province.name} haritada bulundu.`, 'success');
       state.wrongCount = 0;
       window.setTimeout(nextSpokenProvince, 650);
     } else {
       state.wrongCount += 1;
+      playListenFeedback(false);
       markTemporary(province, 'wrong');
       if (state.wrongCount >= 3) {
         pathFor(state.current).classList.add('hint');

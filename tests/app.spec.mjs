@@ -26,6 +26,51 @@ test('dört oyun modu açılır ve Başla düğmesi süreyi etkinleştirir', asy
   }
 });
 
+test('yalnızca doğru bilinen illerin adı haritada gösterilir', async ({ page }) => {
+  await page.goto('/#oyunlar');
+  await page.locator('[data-mode="fill"]').click();
+  await page.locator('#start-game-button').click();
+  await expect(page.locator('#turkey-map .province title')).toHaveCount(0);
+  await page.locator('#answer-input').fill('Burdur');
+  await page.locator('#answer-form').press('Enter');
+  const completedProvince = page.locator('#turkey-map .province.correct');
+  await expect(completedProvince.locator('title')).toHaveText('Burdur');
+  await expect(page.locator('#turkey-map .province:not(.correct) title')).toHaveCount(0);
+});
+
+test('Dinle ve Bul doğru ve yanlış seçimlerde farklı sesler çalar', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.__feedbackFrequencies = [];
+    window.AudioContext = class {
+      constructor() { this.state = 'running'; this.currentTime = 0; this.destination = {}; }
+      createOscillator() {
+        return {
+          frequency: { setValueAtTime: (value) => window.__feedbackFrequencies.push(value) },
+          connect() {}, start() {}, stop() {}, type: ''
+        };
+      }
+      createGain() {
+        return { gain: { setValueAtTime() {}, exponentialRampToValueAtTime() {} }, connect() {} };
+      }
+      resume() {}
+    };
+  });
+  await page.goto('/#oyunlar');
+  await page.locator('[data-mode="listen"]').click();
+  await page.locator('#start-game-button').click();
+  const targetName = await page.locator('#spoken-city strong').textContent();
+  const targetPlate = await page.evaluate(async (name) => {
+    const geo = await fetch('assets/turkiye_iller.geojson').then((response) => response.json());
+    return Number(geo.features.find((feature) => feature.properties.il_adi === name).properties.plaka);
+  }, targetName);
+  const wrongPlate = targetPlate === 1 ? 2 : 1;
+
+  await page.locator(`[data-plate="${wrongPlate}"]`).click();
+  await expect.poll(() => page.evaluate(() => window.__feedbackFrequencies)).toEqual([220, 164.81]);
+  await page.locator(`[data-plate="${targetPlate}"]`).click();
+  await expect.poll(() => page.evaluate(() => window.__feedbackFrequencies)).toEqual([220, 164.81, 523.25, 659.25, 783.99]);
+});
+
 test('kaydedilmiş sonuç rekor penceresinde görünür', async ({ page }) => {
   const pageErrors = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
