@@ -49,7 +49,7 @@ if ((html.match(/data-mode=/g) ?? []).length !== 4) throw new Error('Dört oyun 
 for (const id of ['timer-pause', 'timer-disable', 'tribute-map', 'start-game-button', 'save-time-prompt', 'exit-button', 'exit-dialog', 'finish-missing']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Yeni arayüz denetimi eksik: ${id}`);
 }
-if (!html.includes('styles.css?v=6') || !html.includes('app.js?v=6')) {
+if (!html.includes('styles.css?v=7') || !html.includes('app.js?v=7')) {
   throw new Error('Güncel önbellek sürümü HTML bağlantılarına eklenmemiş.');
 }
 if (html.includes('<datalist') || html.includes('list="province-list"')) {
@@ -81,6 +81,9 @@ if (!styles.includes('@media (min-width: 1001px)') || !styles.includes('overflow
   throw new Error('Masaüstü tam ekran düzeni bulunamadı.');
 }
 if (!styles.includes('.finish-dialog[hidden]')) throw new Error('Sonuç penceresinin gizleme düzeltmesi eksik.');
+if (!styles.includes('background-position: right center; background-size: auto 80%')) {
+  throw new Error('Mobil kapakta Türkiye’nin tamamını gösteren odak ayarı eksik.');
+}
 
 const manifest = JSON.parse(await readFile('dist/manifest.webmanifest', 'utf8'));
 if (manifest.display !== 'standalone' || !manifest.start_url || manifest.icons?.length < 2) {

@@ -1,9 +1,9 @@
-const CACHE_NAME = 'turkiye-harita-oyunu-v6';
+const CACHE_NAME = 'turkiye-harita-oyunu-v7';
 const CORE_ASSETS = [
   './',
   './index.html',
-  './styles.css?v=6',
-  './app.js?v=6',
+  './styles.css?v=7',
+  './app.js?v=7',
   './manifest.webmanifest',
   './assets/app-icon-192.png',
   './assets/app-icon-512.png',

@@ -26,7 +26,7 @@ Bu dosya, geliştirme sırasında alınan önemli teknik ve ürün kararlarını
 - Büyük `TÜRKİYE` yazısı koyu zümrüt yeşili, altın kenarlı ve kabartmalı görünür.
 - Atatürk sayfası mevcut lisanslı portreyi, gerçek il sınırlarından üretilen Türkiye haritasıyla birlikte kullanır.
 - Favicon ve uygulama ikonu yazısızdır: kare çerçeve içinde kuzey yarım küreden görülen kürede Türkiye belirgin bir sınır ve arazi vurgusuyla merkezlenir.
-- Mobil kapakta arka plan odağı doğu illerini de gösterecek biçimde sağa alınmıştır; Atatürk ekranındaki Türkiye SVG'si genişliği değişmeden portre üzerinde sola taşınmıştır.
+- Mobil kapakta `cover` kırpması kaldırılmış, küre sağa hizalanıp yüksekliği ekranın %80'ine indirilmiştir. Böylece görsel sola kayarken Türkiye'nin batıdan doğuya tamamı kadraja girer. Atatürk ekranındaki Türkiye SVG'si genişliği değişmeden portre üzerinde sola taşınmıştır.
 
 ## Hata kayıtları
 
