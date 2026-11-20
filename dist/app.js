@@ -14,6 +14,7 @@ const state = {
   order: [],
   selectedPlate: 1,
   gameStarted: false,
+  partialFinish: false,
   finished: false
 };
 
@@ -32,6 +33,7 @@ const installButton = document.querySelector('#install-app');
 const installGuide = document.querySelector('#install-guide');
 const installGuideText = document.querySelector('#install-guide-text');
 let deferredInstallPrompt = null;
+let exitTimerWasRunning = false;
 const modeMeta = {
   locate: { number: '01', title: 'Seç & Bil', description: 'Haritada bir ile dokun, ardından seçtiğin ilin adını yaz.', prompt: 'Önce haritadan bir şehir seç' },
   fill: { number: '02', title: "81'i Doldur", description: 'Aklına gelen illeri yaz. Her doğru cevap haritada yeşile dönüşür.', prompt: 'Şehir adını yaz ve haritayı doldur' },
@@ -133,7 +135,6 @@ function setFeedback(message, type = '') {
 function clearMap() {
   map.querySelectorAll('.province').forEach((path) => path.className.baseVal = 'province');
   map.querySelectorAll('.map-label').forEach((label) => label.remove());
-  map.querySelectorAll('.province title').forEach((title) => title.remove());
 }
 
 function provincePath(feature, bounds) {
@@ -187,6 +188,9 @@ function buildMap() {
     path.setAttribute('tabindex', '0');
     path.setAttribute('role', 'button');
     path.setAttribute('aria-label', 'Haritadaki isimsiz il');
+    const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+    title.textContent = province.name;
+    path.append(title);
     path.addEventListener('click', () => handleProvinceClick(province));
     path.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); handleProvinceClick(province); }
@@ -206,14 +210,6 @@ function buildMap() {
   document.querySelector('#map-loader')?.remove();
   document.querySelector('#map-shell').setAttribute('aria-busy', 'false');
   buildPlateBoard();
-}
-
-function setPlateTooltips() {
-  state.provinces.forEach((province) => {
-    const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-    title.textContent = province.name;
-    pathFor(province).prepend(title);
-  });
 }
 
 function pathFor(province) {
@@ -379,7 +375,6 @@ function buildPlateBoard() {
 
 function setupPlate() {
   plateBoard.classList.remove('is-hidden');
-  setPlateTooltips();
   controls.innerHTML = `<div id="plate-chip" class="selected-chip">Seçili plaka: <strong>01</strong></div>${inputTemplate('BU PLAKA HANGİ İLE AİT?')}`;
   plateBoard.querySelector('[data-plate-button="1"]').classList.add('active');
   document.querySelector('#answer-form').addEventListener('submit', (event) => {
@@ -410,7 +405,7 @@ function setupPlate() {
 
 function resetGame(mode = state.mode) {
   stopTimer();
-  Object.assign(state, { mode, startedAt: null, elapsed: 0, timerId: null, timerEnabled: true, timerPaused: false, completed: new Set(), selected: null, current: null, wrongCount: 0, order: [], selectedPlate: 1, gameStarted: false, finished: false });
+  Object.assign(state, { mode, startedAt: null, elapsed: 0, timerId: null, timerEnabled: true, timerPaused: false, completed: new Set(), selected: null, current: null, wrongCount: 0, order: [], selectedPlate: 1, gameStarted: false, partialFinish: false, finished: false });
   window.speechSynthesis?.cancel?.();
   clearMap();
   plateBoard.classList.add('is-hidden');
@@ -421,6 +416,7 @@ function resetGame(mode = state.mode) {
   updateProgress();
   setFeedback('Hazır olduğunda Başla düğmesine bas.');
   document.querySelector('#finish-dialog').hidden = true;
+  document.querySelector('#exit-dialog').hidden = true;
   document.querySelector('#save-time-prompt').hidden = false;
   document.querySelector('#save-time-status').textContent = '';
   document.querySelectorAll('#save-time-prompt button').forEach((button) => { button.disabled = false; });
@@ -465,15 +461,37 @@ async function startGame(mode) {
   resetGame(mode);
 }
 
-function finishGame() {
+function finishGame({ partial = false } = {}) {
   state.finished = true;
+  state.partialFinish = partial;
   stopTimer();
+  window.speechSynthesis?.cancel?.();
   const dialog = document.querySelector('#finish-dialog');
+  const missing = state.provinces.filter((province) => !state.completed.has(province.plate));
+  document.querySelector('#finish-kicker').textContent = partial ? 'OYUN TAMAMLANDI' : 'TÜRKİYE TAMAM!';
+  document.querySelector('#finish-title').textContent = partial ? `${state.completed.size} il tamamlandı.` : '81 ilin hepsi sende.';
   document.querySelector('#finish-summary').textContent = state.timerEnabled
-    ? `${formatTime(state.elapsed)} içinde Türkiye'nin 81 ilini tamamladın.`
-    : `Türkiye'nin 81 ilini tamamladın.`;
-  document.querySelector('#save-time-prompt').hidden = !state.timerEnabled;
+    ? `${formatTime(state.elapsed)} sürede ${state.completed.size} / 81 il tamamladın.`
+    : `${state.completed.size} / 81 il tamamladın.`;
+  const missingDetails = document.querySelector('#finish-missing');
+  missingDetails.hidden = missing.length === 0;
+  missingDetails.querySelector('summary').textContent = `Eksik illeri göster (${missing.length})`;
+  document.querySelector('#finish-missing-list').textContent = missing.map((province) => province.name).join(', ');
+  document.querySelector('#save-time-question').textContent = partial ? 'İlerlemenizi ve sürenizi kaydetmek ister misiniz?' : 'Sürenizi kaydetmek ister misiniz?';
+  document.querySelector('#save-time-prompt').hidden = !state.timerEnabled && !partial;
   dialog.hidden = false;
+}
+
+function openExitDialog() {
+  exitTimerWasRunning = Boolean(state.timerId);
+  if (exitTimerWasRunning) stopTimer();
+  document.querySelector('#exit-dialog').hidden = false;
+}
+
+function closeExitDialog({ resume = true } = {}) {
+  document.querySelector('#exit-dialog').hidden = true;
+  if (resume && exitTimerWasRunning) startTimer();
+  exitTimerWasRunning = false;
 }
 
 function answerSaveTime(shouldSave) {
@@ -481,9 +499,10 @@ function answerSaveTime(shouldSave) {
   if (shouldSave) {
     try {
       const records = JSON.parse(localStorage.getItem('turkiye-harita-sureleri') || '[]');
-      records.push({ mode: state.mode, seconds: state.elapsed, savedAt: new Date().toISOString() });
+      const missing = state.provinces.filter((province) => !state.completed.has(province.plate)).map((province) => province.name);
+      records.push({ mode: state.mode, seconds: state.elapsed, completed: state.completed.size, missing, partial: state.partialFinish, savedAt: new Date().toISOString() });
       localStorage.setItem('turkiye-harita-sureleri', JSON.stringify(records.slice(-50)));
-      status.textContent = 'Süreniz bu cihazda kaydedildi.';
+      status.textContent = state.partialFinish ? 'İlerlemeniz ve süreniz bu cihazda kaydedildi.' : 'Süreniz bu cihazda kaydedildi.';
     } catch {
       status.textContent = 'Süre kaydedilemedi. Tarayıcı depolamasını kontrol edin.';
     }
@@ -494,7 +513,16 @@ function answerSaveTime(shouldSave) {
 document.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => showScreen(button.dataset.next)));
 document.querySelectorAll('[data-back]').forEach((button) => button.addEventListener('click', () => navigateBack(button.dataset.back)));
 document.querySelectorAll('[data-mode]').forEach((button) => button.addEventListener('click', () => startGame(button.dataset.mode)));
-document.querySelector('#back-button').addEventListener('click', () => navigateBack('mode-screen'));
+document.querySelector('#exit-button').addEventListener('click', openExitDialog);
+document.querySelector('#exit-cancel').addEventListener('click', () => closeExitDialog());
+document.querySelector('#exit-direct').addEventListener('click', () => {
+  closeExitDialog({ resume: false });
+  navigateBack('mode-screen');
+});
+document.querySelector('#exit-finish').addEventListener('click', () => {
+  closeExitDialog({ resume: false });
+  finishGame({ partial: true });
+});
 document.querySelector('#restart-button').addEventListener('click', () => resetGame());
 document.querySelector('#finish-restart').addEventListener('click', () => resetGame());
 document.querySelector('#finish-menu').addEventListener('click', () => navigateBack('mode-screen'));
@@ -558,7 +586,7 @@ installButton.addEventListener('click', async () => {
   }
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
   installGuideText.textContent = isIOS
-    ? 'Safari’de Paylaş düğmesine dokun, ardından “Ana Ekrana Ekle” seçeneğini seç.'
+    ? 'Safari’de Paylaş düğmesine dokun, aşağı kaydır ve ardından “Ana Ekrana Ekle” seçeneğini seç.'
     : 'Tarayıcı menüsünü açıp “Uygulamayı yükle” veya “Ana ekrana ekle” seçeneğini kullan.';
   installGuide.hidden = false;
 });
@@ -592,19 +620,31 @@ window.addEventListener('popstate', (event) => {
   showScreen(screen, { historyAction: 'none' });
 });
 
-let welcomeTouchStart = null;
-const welcomeScreen = document.querySelector('#welcome-screen');
-welcomeScreen.addEventListener('touchstart', (event) => {
-  const touch = event.changedTouches[0];
-  welcomeTouchStart = { x: touch.clientX, y: touch.clientY };
-}, { passive: true });
-welcomeScreen.addEventListener('touchend', (event) => {
-  if (!welcomeTouchStart || !welcomeScreen.classList.contains('is-active')) return;
-  const touch = event.changedTouches[0];
-  const distance = Math.hypot(touch.clientX - welcomeTouchStart.x, touch.clientY - welcomeTouchStart.y);
-  welcomeTouchStart = null;
-  if (distance >= 45) showScreen('tribute-screen');
-}, { passive: true });
+const swipeRoutes = {
+  'welcome-screen': { left: 'tribute-screen' },
+  'tribute-screen': { left: 'mode-screen', right: 'welcome-screen' },
+  'mode-screen': { right: 'tribute-screen' }
+};
+
+Object.entries(swipeRoutes).forEach(([screenId, routes]) => {
+  const screen = document.querySelector(`#${screenId}`);
+  let touchStart = null;
+  screen.addEventListener('touchstart', (event) => {
+    if (!window.matchMedia('(max-width: 640px)').matches) return;
+    const touch = event.changedTouches[0];
+    touchStart = { x: touch.clientX, y: touch.clientY };
+  }, { passive: true });
+  screen.addEventListener('touchend', (event) => {
+    if (!touchStart || !screen.classList.contains('is-active')) return;
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - touchStart.x;
+    const dy = touch.clientY - touchStart.y;
+    touchStart = null;
+    if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+    if (dx < 0 && routes.left) showScreen(routes.left);
+    if (dx > 0 && routes.right) navigateBack(routes.right);
+  }, { passive: true });
+});
 
 const mapReadyPromise = fetch('assets/turkiye_iller.geojson')
   .then((response) => {

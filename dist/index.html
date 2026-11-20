@@ -11,16 +11,16 @@
   <meta name="apple-mobile-web-app-title" content="Harita Oyunu">
   <title>Türkiye Harita Oyunu</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="assets/favicon.svg">
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/app-icon-192.png">
+  <link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
   <main id="app">
     <section id="welcome-screen" class="screen welcome-screen is-active" aria-labelledby="welcome-title">
       <nav class="screen-nav" aria-label="Sayfa gezinmesi">
-        <button type="button" disabled>Önceki sayfa</button>
-        <button type="button" data-next="tribute-screen">Sonraki sayfa</button>
+        <button type="button" disabled><span>Önceki sayfa<small>Sağa kaydır</small></span></button>
+        <button type="button" data-next="tribute-screen"><span>Sonraki sayfa<small>Sola kaydır</small></span></button>
       </nav>
       <div class="welcome-copy">
         <p class="eyebrow">81 İL · 4 OYUN · TEK HARİTA</p>
@@ -36,8 +36,8 @@
 
     <section id="tribute-screen" class="screen tribute-screen" aria-labelledby="tribute-title">
       <nav class="screen-nav screen-nav-light" aria-label="Sayfa gezinmesi">
-        <button type="button" data-back="welcome-screen">Önceki sayfa</button>
-        <button type="button" data-next="mode-screen">Sonraki sayfa</button>
+        <button type="button" data-back="welcome-screen"><span>Önceki sayfa<small>Sağa kaydır</small></span></button>
+        <button type="button" data-next="mode-screen"><span>Sonraki sayfa<small>Sola kaydır</small></span></button>
       </nav>
       <svg id="tribute-map" class="tribute-map" viewBox="0 0 1000 500" aria-hidden="true"></svg>
       <div class="tribute-shade"></div>
@@ -51,8 +51,8 @@
 
     <section id="mode-screen" class="screen mode-screen" aria-labelledby="mode-title">
       <nav class="screen-nav" aria-label="Sayfa gezinmesi">
-        <button type="button" data-back="tribute-screen">Önceki sayfa</button>
-        <button type="button" disabled title="Devam etmek için bir oyun seç">Sonraki sayfa</button>
+        <button type="button" data-back="tribute-screen"><span>Önceki sayfa<small>Sağa kaydır</small></span></button>
+        <button type="button" disabled title="Devam etmek için bir oyun seç"><span>Sonraki sayfa<small>Sola kaydır</small></span></button>
       </nav>
       <header class="selection-header">
         <div>
@@ -94,7 +94,7 @@
 
     <section id="game-screen" class="screen game-screen" aria-labelledby="game-title">
       <header class="game-header">
-        <button id="back-button" class="icon-button" aria-label="Oyun seçimine dön">×</button>
+        <button id="exit-button" class="exit-button" type="button">Çıkış</button>
         <div class="game-brand"><span class="brand-mark">TR</span><span>Türkiye<br><b>Harita Oyunu</b></span></div>
         <div class="game-stats">
           <div class="timer-stat">
@@ -139,11 +139,15 @@
       <div id="finish-dialog" class="finish-dialog" role="dialog" aria-modal="true" aria-labelledby="finish-title" hidden>
         <div class="finish-card">
           <span class="finish-star">★</span>
-          <p class="eyebrow">TÜRKİYE TAMAM!</p>
+          <p id="finish-kicker" class="eyebrow">TÜRKİYE TAMAM!</p>
           <h2 id="finish-title">81 ilin hepsi sende.</h2>
           <p id="finish-summary"></p>
+          <details id="finish-missing" class="finish-missing" hidden>
+            <summary>Eksik illeri göster</summary>
+            <p id="finish-missing-list"></p>
+          </details>
           <div id="save-time-prompt" class="save-time-prompt">
-            <p>Sürenizi kaydetmek ister misiniz?</p>
+            <p id="save-time-question">Sürenizi kaydetmek ister misiniz?</p>
             <div>
               <button id="save-time-yes" class="primary-button" type="button">Evet, kaydet</button>
               <button id="save-time-no" class="secondary-button" type="button">Hayır</button>
@@ -153,6 +157,19 @@
           <div class="finish-actions">
             <button id="finish-restart" class="primary-button">Tekrar oyna</button>
             <button id="finish-menu" class="secondary-button">Oyunları gör</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="exit-dialog" class="finish-dialog" role="dialog" aria-modal="true" aria-labelledby="exit-title" hidden>
+        <div class="finish-card exit-card">
+          <p class="eyebrow">OYUNDAN ÇIKIŞ</p>
+          <h2 id="exit-title">Nasıl çıkmak istersiniz?</h2>
+          <p>İlerlemenizi sonuç olarak tamamlayabilir veya kaydetmeden oyun seçimine dönebilirsiniz.</p>
+          <div class="exit-actions">
+            <button id="exit-finish" class="primary-button" type="button">Gelinen noktada bitir</button>
+            <button id="exit-direct" class="secondary-button" type="button">Kaydetmeden çık</button>
+            <button id="exit-cancel" class="secondary-button" type="button">Oyuna devam et</button>
           </div>
         </div>
       </div>
@@ -166,6 +183,6 @@
     <strong>Ana ekrana ekle</strong>
     <p id="install-guide-text">Tarayıcı menüsünü açıp “Uygulamayı yükle” seçeneğini kullan.</p>
   </div>
-  <script src="app.js?v=5" defer></script>
+  <script src="app.js?v=6" defer></script>
 </body>
 </html>

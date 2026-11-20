@@ -6,9 +6,9 @@ const required = [
   'dist/app.js',
   'dist/manifest.webmanifest',
   'dist/sw.js',
-  'dist/assets/app-icon.svg',
-  'dist/assets/app-icon-maskable.svg',
-  'dist/assets/favicon.svg',
+  'dist/assets/app-icon-192.png',
+  'dist/assets/app-icon-512.png',
+  'dist/assets/favicon.png',
   'dist/assets/turkiye_iller.geojson',
   'dist/assets/ataturk-portre.png',
   'dist/assets/kapak-turkiye-kure.png',
@@ -18,6 +18,13 @@ const required = [
 for (const file of required) {
   const info = await stat(file);
   if (!info.isFile() || info.size === 0) throw new Error(`Eksik veya boş dosya: ${file}`);
+}
+
+for (const [file, expectedSize] of [['dist/assets/app-icon-192.png', 192], ['dist/assets/app-icon-512.png', 512], ['dist/assets/favicon.png', 64]]) {
+  const png = await readFile(file);
+  if (png.toString('ascii', 1, 4) !== 'PNG' || png.readUInt32BE(16) !== expectedSize || png.readUInt32BE(20) !== expectedSize) {
+    throw new Error(`PNG ikon boyutu hatalı: ${file}`);
+  }
 }
 
 const geo = JSON.parse(await readFile('dist/assets/turkiye_iller.geojson', 'utf8'));
@@ -37,18 +44,22 @@ for (const id of ['welcome-screen', 'tribute-screen', 'mode-screen', 'game-scree
 if (!html.includes('rel="manifest"') || !html.includes('id="install-app"')) {
   throw new Error('PWA manifest bağlantısı veya yükleme düğmesi eksik.');
 }
+if (html.includes('favicon.svg') || html.includes('app-icon.svg')) throw new Error('Eski SVG ikon bağlantısı hâlâ HTML içinde.');
 if ((html.match(/data-mode=/g) ?? []).length !== 4) throw new Error('Dört oyun modu kartı bulunamadı.');
-for (const id of ['timer-pause', 'timer-disable', 'tribute-map', 'start-game-button', 'save-time-prompt']) {
+for (const id of ['timer-pause', 'timer-disable', 'tribute-map', 'start-game-button', 'save-time-prompt', 'exit-button', 'exit-dialog', 'finish-missing']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Yeni arayüz denetimi eksik: ${id}`);
 }
-if (!html.includes('styles.css?v=5') || !html.includes('app.js?v=5')) {
+if (!html.includes('styles.css?v=6') || !html.includes('app.js?v=6')) {
   throw new Error('Güncel önbellek sürümü HTML bağlantılarına eklenmemiş.');
 }
 if (html.includes('<datalist') || html.includes('list="province-list"')) {
   throw new Error('Şehir öneri listesi kaldırılmamış.');
 }
-if ((html.match(/>Önceki sayfa</g) ?? []).length !== 3 || (html.match(/>Sonraki sayfa</g) ?? []).length !== 3) {
+if ((html.match(/Önceki sayfa/g) ?? []).length !== 3 || (html.match(/Sonraki sayfa/g) ?? []).length !== 3) {
   throw new Error('Tanıtım sayfalarının ileri/geri gezinme düğmeleri eksik.');
+}
+if ((html.match(/Sağa kaydır/g) ?? []).length !== 3 || (html.match(/Sola kaydır/g) ?? []).length !== 3) {
+  throw new Error('Mobil kaydırma yönlendirmeleri eksik.');
 }
 for (const removedText of ['Her mod 81 ilin tamamıyla oynanır', 'İpucu: Türkçe karakter', 'Portre: maliozer']) {
   if (html.includes(removedText)) throw new Error(`Kaldırılması istenen metin hâlâ sayfada: ${removedText}`);
@@ -61,7 +72,7 @@ for (const behavior of ["querySelectorAll('[data-mode]')", 'mapReadyPromise', "a
 for (const behavior of ["addEventListener('popstate'", "querySelectorAll('[data-back]')", 'navigateBack']) {
   if (!app.includes(behavior)) throw new Error(`Sayfa geçmişi davranışı eksik: ${behavior}`);
 }
-for (const behavior of ['function beginGame()', 'provinceAliases', 'p.plate > province.plate', 'setPlateTooltips()', "localStorage.setItem('turkiye-harita-sureleri'"]) {
+for (const behavior of ['function beginGame()', 'provinceAliases', 'p.plate > province.plate', 'title.textContent = province.name', "localStorage.setItem('turkiye-harita-sureleri'", 'finishGame({ partial: true })', 'swipeRoutes']) {
   if (!app.includes(behavior)) throw new Error(`Yeni oyun davranışı eksik: ${behavior}`);
 }
 
