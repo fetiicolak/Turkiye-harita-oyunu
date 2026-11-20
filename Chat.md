@@ -9,8 +9,11 @@ Bu dosya, geliştirme sırasında alınan önemli teknik ve ürün kararlarını
 - Harita, `dist/assets/turkiye_iller.geojson` içindeki 81 ilin gerçek sınırlarından tarayıcıda SVG olarak oluşturulur.
 - Oyunların tamamı klavye, fare ve dokunmatik ekranla kullanılabilir olmalıdır.
 - Masaüstünde oyun ekranı tek görünüm alanına sığar; küçük ekranlarda içerik gerektiğinde dikey akabilir.
-- Zamanlayıcı oyun açıldığı anda başlar. Kullanıcı süreyi durdurabilir, devam ettirebilir veya tamamen kapatabilir.
+- Oyun ekranı önce hazır durumda açılır. Zamanlayıcı ve oyun etkileşimleri yalnızca sol paneldeki `Başla` düğmesine basılınca etkinleşir; kullanıcı süreyi daha sonra durdurabilir, devam ettirebilir veya tamamen kapatabilir.
 - Ana sayfa, Atatürk sayfası, oyun seçimi ve oyun ekranı tarayıcı geçmişine yazılır. Böylece görünür geri düğmeleriyle birlikte tarayıcının geri/ileri düğmeleri de çalışır.
+- Tanıtım ekranlarının gezinme düğmeleri sağ üstte `Önceki sayfa` ve `Sonraki sayfa` adlarıyla gösterilir. İlk ve son tanıtım ekranındaki geçersiz yön devre dışı bırakılır.
+- Şehir cevaplarında açılır öneri listesi kullanılmaz. Yaygın kısa/eski adlar (`Afyon`, `Urfa`, `Antep`, `Maraş`, `İçel`, `İzmit`, `Adapazarı`) doğru il ile eşleştirilir.
+- Tamamlanan süreler yalnızca kullanıcı onayıyla ve en fazla son 50 kayıt olacak şekilde cihazın yerel tarayıcı depolamasına kaydedilir; sunucuya gönderilmez.
 - PWA önbelleği güncellemelerde sürümlenir ve uygulama dosyalarında ağ öncelikli strateji kullanılır. Bu karar, eski JavaScript’in oyunları bozmasını önlemek içindir.
 
 ## Görsel kararlar
@@ -23,6 +26,7 @@ Bu dosya, geliştirme sırasında alınan önemli teknik ve ürün kararlarını
 ## Hata kayıtları
 
 - 2026-11-20: Sonuç penceresi oyun başında görünüyordu. Neden, `.finish-dialog` sınıfındaki `display: grid` kuralının HTML `hidden` niteliğini ezmesiydi. `.finish-dialog[hidden] { display: none !important; }` kuralıyla düzeltildi ve otomatik kontrole eklendi.
+- 2026-11-20: Plaka oyununda doğru cevaptan sonra ilk eksik plakaya dönülüyordu. Sonraki seçim, cevaplanan plakadan sonraki ilk eksik kodu bulacak; listenin sonunda gerekirse başa saracak şekilde değiştirildi.
 
 ## Bakım notu
 

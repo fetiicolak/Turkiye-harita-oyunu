@@ -15,11 +15,13 @@ Türkiye'nin 81 ilini eğlenerek öğrenebileceğiniz, telefon ve bilgisayarda �
 
 ## Süreyi kontrol et
 
-Süre, bir oyunu açtığınız anda otomatik olarak başlar. Oyun ekranının üst kısmındaki seçeneklerle süreyi durdurabilir, kaldığınız yerden devam ettirebilir veya kapatabilirsiniz.
+Bir oyunu seçtikten sonra sol paneldeki **Başla** düğmesine basın; süre tam o anda çalışmaya başlar. Oyun ekranının üst kısmındaki seçeneklerle süreyi durdurabilir, kaldığınız yerden devam ettirebilir veya kapatabilirsiniz. Oyun bittiğinde sürenizi isterseniz kullandığınız cihaza kaydedebilirsiniz.
+
+Şehir cevapları yalnızca serbest metin olarak yazılır; uygulama şehir listesini göstermez. `Afyon`, `Urfa`, `Antep`, `Maraş`, `İçel`, `İzmit` ve `Adapazarı` gibi yaygın kısa veya eski kullanımlar da kabul edilir.
 
 ## Sayfalar arasında gezin
 
-Sayfalardaki geri düğmelerini veya tarayıcınızın geri ve ileri düğmelerini kullanabilirsiniz. Telefonda ana sayfayı kaydırarak, bilgisayarda herhangi bir tuşa basarak başlayabilirsiniz.
+Sayfaların sağ üstündeki **Önceki sayfa** ve **Sonraki sayfa** düğmelerini veya tarayıcınızın geri ve ileri düğmelerini kullanabilirsiniz. Bilgisayarda ana sayfa ve Atatürk sayfasında herhangi bir tuşa basarak ilerleyebilirsiniz; telefonda ana sayfayı kaydırarak başlayabilirsiniz.
 
 ## Uygulama olarak yükle
 

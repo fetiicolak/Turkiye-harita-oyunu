@@ -25,17 +25,18 @@ button { cursor: pointer; }
 .screen { display: none; min-height: 100svh; }
 .screen.is-active { display: flex; animation: screen-in .55s ease both; }
 .is-hidden { display: none !important; }
-.screen-nav { position: absolute; z-index: 12; top: max(1rem, env(safe-area-inset-top)); left: max(1rem, env(safe-area-inset-left)); }
+.screen-nav { position: absolute; z-index: 12; top: max(1rem, env(safe-area-inset-top)); right: max(1rem, env(safe-area-inset-right)); display: flex; gap: .5rem; }
 .screen-nav button { border: 1px solid rgba(18,38,32,.18); border-radius: 999px; padding: .65rem 1rem; background: rgba(255,253,247,.78); color: var(--ink); font-size: .78rem; font-weight: 700; backdrop-filter: blur(10px); transition: background .2s ease, color .2s ease, transform .2s ease; }
 .screen-nav button:hover { background: var(--ink); color: white; transform: translateY(-2px); }
 .screen-nav-light button { border-color: rgba(255,255,255,.3); background: rgba(12,20,17,.52); color: white; }
 .screen-nav-light button:hover { background: white; color: var(--ink); }
+.screen-nav button:disabled { opacity: .42; cursor: not-allowed; transform: none; }
 
-.install-app { position: fixed; z-index: 30; right: max(1rem, env(safe-area-inset-right)); top: max(1rem, env(safe-area-inset-top)); display: flex; align-items: center; gap: .55rem; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; padding: .75rem 1rem; background: rgba(18,38,32,.92); box-shadow: 0 12px 35px rgba(18,38,32,.2); color: white; font-size: .82rem; font-weight: 700; backdrop-filter: blur(10px); }
+.install-app { position: fixed; z-index: 30; right: max(1rem, env(safe-area-inset-right)); bottom: max(1rem, env(safe-area-inset-bottom)); display: flex; align-items: center; gap: .55rem; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; padding: .75rem 1rem; background: rgba(18,38,32,.92); box-shadow: 0 12px 35px rgba(18,38,32,.2); color: white; font-size: .82rem; font-weight: 700; backdrop-filter: blur(10px); }
 .install-app[hidden], .install-guide[hidden] { display: none !important; }
 .install-app:hover { background: var(--red); transform: translateY(-2px); }
 .install-app span { display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid rgba(255,255,255,.45); border-radius: 50%; }
-.install-guide { position: fixed; z-index: 31; right: max(1rem, env(safe-area-inset-right)); top: calc(max(1rem, env(safe-area-inset-top)) + 3.7rem); width: min(340px, calc(100vw - 2rem)); border: 1px solid var(--line); border-radius: 16px; padding: 1rem 2.5rem 1rem 1rem; background: #fffdf7; box-shadow: var(--shadow); }
+.install-guide { position: fixed; z-index: 31; right: max(1rem, env(safe-area-inset-right)); bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 3.7rem); width: min(340px, calc(100vw - 2rem)); border: 1px solid var(--line); border-radius: 16px; padding: 1rem 2.5rem 1rem 1rem; background: #fffdf7; box-shadow: var(--shadow); }
 .install-guide strong { font: 700 1.15rem var(--serif); }
 .install-guide p { margin: .45rem 0 0; color: var(--muted); font-size: .85rem; line-height: 1.5; }
 .install-guide button { position: absolute; right: .6rem; top: .45rem; border: 0; background: transparent; color: var(--muted); font-size: 1.4rem; }
@@ -112,7 +113,10 @@ button { cursor: pointer; }
 .control-panel { display: flex; flex-direction: column; padding: clamp(1.5rem, 3vw, 3rem); border-right: 1px solid var(--line); background: #fbf8f0; }
 .control-panel h1 { margin: 0; font: 700 clamp(2rem, 3vw, 3.5rem)/1 var(--serif); }
 .game-description { color: var(--muted); line-height: 1.55; }
+.game-start-button { align-self: flex-start; min-width: 132px; margin-top: .5rem; }
+.game-start-button[hidden] { display: none; }
 #dynamic-controls { margin-top: 1rem; }
+#dynamic-controls[inert] { opacity: .52; }
 .field-label { display: block; margin-bottom: .5rem; font-size: .75rem; font-weight: 700; letter-spacing: .1em; }
 .answer-row { display: flex; gap: .5rem; }
 .answer-input { min-width: 0; width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: .95rem 1rem; outline: none; background: white; color: var(--ink); }
@@ -159,6 +163,12 @@ button { cursor: pointer; }
 .finish-card h2 { margin: 0; font: 700 2.6rem/1.05 var(--serif); }
 .finish-card p:not(.eyebrow) { color: var(--muted); line-height: 1.6; }
 .finish-actions { display: flex; justify-content: center; gap: .75rem; margin-top: 1.5rem; }
+.save-time-prompt { margin-top: 1.4rem; border-top: 1px solid var(--line); padding-top: 1.2rem; }
+.save-time-prompt[hidden] { display: none; }
+.save-time-prompt > p { margin: 0 0 .8rem; color: var(--ink) !important; font-weight: 700; }
+.save-time-prompt > div { display: flex; justify-content: center; gap: .6rem; }
+.save-time-prompt button { padding: .7rem 1rem; font-size: .82rem; }
+.save-time-prompt small { display: block; min-height: 1.2rem; margin-top: .65rem; color: var(--green); font-weight: 700; }
 
 @media (max-width: 1000px) {
   .mode-grid { grid-template-columns: repeat(2, 1fr); }
@@ -204,7 +214,7 @@ button { cursor: pointer; }
   .desktop-copy { display: none; }
   .mobile-copy { display: inline; }
   .turkey-word { right: 3vw; top: 4.5rem; bottom: auto; font-size: clamp(3.5rem, 18vw, 6rem); opacity: .92; }
-  .screen-nav { top: max(.75rem, env(safe-area-inset-top)); left: max(.75rem, env(safe-area-inset-left)); }
+  .screen-nav { top: max(.75rem, env(safe-area-inset-top)); right: max(.75rem, env(safe-area-inset-right)); }
   .screen-nav button { padding: .55rem .8rem; font-size: .72rem; }
   .tribute-screen { align-items: end; padding-bottom: 12vh; background-position: 58% center; background-size: auto 92%; }
   .tribute-map { width: 130vw; right: -42%; top: 42%; opacity: .32; }

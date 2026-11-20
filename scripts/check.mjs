@@ -38,11 +38,17 @@ if (!html.includes('rel="manifest"') || !html.includes('id="install-app"')) {
   throw new Error('PWA manifest bağlantısı veya yükleme düğmesi eksik.');
 }
 if ((html.match(/data-mode=/g) ?? []).length !== 4) throw new Error('Dört oyun modu kartı bulunamadı.');
-for (const id of ['timer-pause', 'timer-disable', 'tribute-map']) {
+for (const id of ['timer-pause', 'timer-disable', 'tribute-map', 'start-game-button', 'save-time-prompt']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Yeni arayüz denetimi eksik: ${id}`);
 }
-if (!html.includes('styles.css?v=4') || !html.includes('app.js?v=4')) {
+if (!html.includes('styles.css?v=5') || !html.includes('app.js?v=5')) {
   throw new Error('Güncel önbellek sürümü HTML bağlantılarına eklenmemiş.');
+}
+if (html.includes('<datalist') || html.includes('list="province-list"')) {
+  throw new Error('Şehir öneri listesi kaldırılmamış.');
+}
+if ((html.match(/>Önceki sayfa</g) ?? []).length !== 3 || (html.match(/>Sonraki sayfa</g) ?? []).length !== 3) {
+  throw new Error('Tanıtım sayfalarının ileri/geri gezinme düğmeleri eksik.');
 }
 for (const removedText of ['Her mod 81 ilin tamamıyla oynanır', 'İpucu: Türkçe karakter', 'Portre: maliozer']) {
   if (html.includes(removedText)) throw new Error(`Kaldırılması istenen metin hâlâ sayfada: ${removedText}`);
@@ -54,6 +60,9 @@ for (const behavior of ["querySelectorAll('[data-mode]')", 'mapReadyPromise', "a
 }
 for (const behavior of ["addEventListener('popstate'", "querySelectorAll('[data-back]')", 'navigateBack']) {
   if (!app.includes(behavior)) throw new Error(`Sayfa geçmişi davranışı eksik: ${behavior}`);
+}
+for (const behavior of ['function beginGame()', 'provinceAliases', 'p.plate > province.plate', 'setPlateTooltips()', "localStorage.setItem('turkiye-harita-sureleri'"]) {
+  if (!app.includes(behavior)) throw new Error(`Yeni oyun davranışı eksik: ${behavior}`);
 }
 
 const styles = await readFile('dist/styles.css', 'utf8');

@@ -13,6 +13,7 @@ const state = {
   wrongCount: 0,
   order: [],
   selectedPlate: 1,
+  gameStarted: false,
   finished: false
 };
 
@@ -26,6 +27,7 @@ const plateBoard = document.querySelector('#plate-board');
 const soundButton = document.querySelector('#sound-button');
 const timerPauseButton = document.querySelector('#timer-pause');
 const timerDisableButton = document.querySelector('#timer-disable');
+const startGameButton = document.querySelector('#start-game-button');
 const installButton = document.querySelector('#install-app');
 const installGuide = document.querySelector('#install-guide');
 const installGuideText = document.querySelector('#install-guide-text');
@@ -43,9 +45,24 @@ const screenHashes = {
   'game-screen': '#oyun'
 };
 const hashScreens = Object.fromEntries(Object.entries(screenHashes).map(([screen, hash]) => [hash, screen]));
+const provinceAliases = {
+  afyon: 'afyonkarahisar',
+  urfa: 'sanliurfa',
+  antep: 'gaziantep',
+  maras: 'kahramanmaras',
+  kmaras: 'kahramanmaras',
+  icel: 'mersin',
+  izmit: 'kocaeli',
+  adapazari: 'sakarya'
+};
 
 function normalizeName(value = '') {
   return value.trim().toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ı/g, 'i').replace(/[^a-z0-9]/g, '');
+}
+
+function provinceMatches(province, value) {
+  const answer = normalizeName(value);
+  return province.normalized === answer || province.normalized === provinceAliases[answer];
 }
 
 function showScreen(id, { historyAction = 'push' } = {}) {
@@ -55,7 +72,7 @@ function showScreen(id, { historyAction = 'push' } = {}) {
     window.speechSynthesis?.cancel?.();
   }
   screens.forEach((screen) => screen.classList.toggle('is-active', screen.id === id));
-  if (id === 'game-screen' && state.mode && !state.finished) startTimer();
+  if (id === 'game-screen' && state.mode && state.gameStarted && !state.finished) startTimer();
   window.scrollTo({ top: 0, behavior: 'smooth' });
   if (historyAction !== 'none') {
     const currentDepth = Number(window.history.state?.appDepth ?? 0);
@@ -86,7 +103,7 @@ function renderTimer() {
 }
 
 function startTimer() {
-  if (!state.timerEnabled || state.timerPaused || state.timerId || state.finished) return;
+  if (!state.gameStarted || !state.timerEnabled || state.timerPaused || state.timerId || state.finished) return;
   state.startedAt = Date.now();
   state.timerId = window.setInterval(renderTimer, 250);
   renderTimer();
@@ -103,7 +120,7 @@ function stopTimer() {
 function syncTimerControls() {
   timerPauseButton.textContent = state.timerPaused ? 'Devam et' : 'Durdur';
   timerPauseButton.setAttribute('aria-label', state.timerPaused ? 'Süreyi devam ettir' : 'Süreyi durdur');
-  timerPauseButton.disabled = !state.timerEnabled;
+  timerPauseButton.disabled = !state.timerEnabled || !state.gameStarted;
   timerDisableButton.textContent = state.timerEnabled ? 'Kapat' : 'Aç';
   timerDisableButton.setAttribute('aria-label', state.timerEnabled ? 'Süreyi kapat' : 'Süreyi aç');
 }
@@ -116,6 +133,7 @@ function setFeedback(message, type = '') {
 function clearMap() {
   map.querySelectorAll('.province').forEach((path) => path.className.baseVal = 'province');
   map.querySelectorAll('.map-label').forEach((label) => label.remove());
+  map.querySelectorAll('.province title').forEach((title) => title.remove());
 }
 
 function provincePath(feature, bounds) {
@@ -187,8 +205,15 @@ function buildMap() {
   tributeMap.replaceChildren(tributeFragment);
   document.querySelector('#map-loader')?.remove();
   document.querySelector('#map-shell').setAttribute('aria-busy', 'false');
-  document.querySelector('#province-list').innerHTML = state.provinces.map((p) => `<option value="${p.name}"></option>`).join('');
   buildPlateBoard();
+}
+
+function setPlateTooltips() {
+  state.provinces.forEach((province) => {
+    const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+    title.textContent = province.name;
+    pathFor(province).prepend(title);
+  });
 }
 
 function pathFor(province) {
@@ -230,7 +255,7 @@ function updateProgress() {
 }
 
 function handleProvinceClick(province) {
-  if (!state.mode || state.finished) return;
+  if (!state.mode || !state.gameStarted || state.finished) return;
   startTimer();
   if (state.mode === 'locate') {
     if (state.completed.has(province.plate)) return setFeedback(`${province.name} zaten doğru bilindi. Başka bir il seç.`, 'success');
@@ -260,7 +285,7 @@ function handleProvinceClick(province) {
 }
 
 function inputTemplate(label, buttonText = 'Kontrol et') {
-  return `<form id="answer-form"><label class="field-label" for="answer-input">${label}</label><div class="answer-row"><input id="answer-input" class="answer-input" list="province-list" autocomplete="off" placeholder="Örn. Burdur"><button class="answer-button">${buttonText}</button></div></form>`;
+  return `<form id="answer-form"><label class="field-label" for="answer-input">${label}</label><div class="answer-row"><input id="answer-input" class="answer-input" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Örn. Burdur"><button class="answer-button">${buttonText}</button></div></form>`;
 }
 
 function setupLocate() {
@@ -270,7 +295,7 @@ function setupLocate() {
     startTimer();
     const input = document.querySelector('#answer-input');
     if (!state.selected) return setFeedback('Önce haritadan bir il seçmelisin.', 'error');
-    if (normalizeName(input.value) === state.selected.normalized) {
+    if (provinceMatches(state.selected, input.value)) {
       const correct = state.selected;
       markComplete(correct);
       document.querySelector('#selected-chip').innerHTML = `Doğru cevap: <strong>${correct.name}</strong>`;
@@ -291,7 +316,7 @@ function setupFill() {
     event.preventDefault();
     startTimer();
     const input = document.querySelector('#answer-input');
-    const province = state.provinces.find((p) => p.normalized === normalizeName(input.value));
+    const province = state.provinces.find((p) => provinceMatches(p, input.value));
     if (!province) {
       setFeedback('Bu isimle bir il bulamadık. Yazımını kontrol et.', 'error');
       input.select();
@@ -337,14 +362,13 @@ function setupListen() {
   state.order = shuffle(state.provinces);
   controls.innerHTML = `<div id="spoken-city" class="spoken-city">Sıradaki şehir <strong>Hazırlanıyor…</strong></div><p style="color:var(--muted);font-size:.85rem;line-height:1.5">Şehrin adı erişilebilirlik için ekranda da gösterilir. Haritadaki doğru bölgeye dokun.</p>`;
   soundButton.classList.remove('is-hidden');
-  nextSpokenProvince();
 }
 
 function buildPlateBoard() {
   plateBoard.innerHTML = Array.from({ length: 81 }, (_, index) => `<button class="plate-button" data-plate-button="${index + 1}">${String(index + 1).padStart(2, '0')}</button>`).join('');
   plateBoard.addEventListener('click', (event) => {
     const button = event.target.closest('[data-plate-button]');
-    if (!button || state.mode !== 'plate') return;
+    if (!button || state.mode !== 'plate' || !state.gameStarted) return;
     state.selectedPlate = Number(button.dataset.plateButton);
     plateBoard.querySelectorAll('.active').forEach((el) => el.classList.remove('active'));
     button.classList.add('active');
@@ -355,6 +379,7 @@ function buildPlateBoard() {
 
 function setupPlate() {
   plateBoard.classList.remove('is-hidden');
+  setPlateTooltips();
   controls.innerHTML = `<div id="plate-chip" class="selected-chip">Seçili plaka: <strong>01</strong></div>${inputTemplate('BU PLAKA HANGİ İLE AİT?')}`;
   plateBoard.querySelector('[data-plate-button="1"]').classList.add('active');
   document.querySelector('#answer-form').addEventListener('submit', (event) => {
@@ -362,12 +387,13 @@ function setupPlate() {
     startTimer();
     const input = document.querySelector('#answer-input');
     const province = state.provinces.find((p) => p.plate === state.selectedPlate);
-    if (normalizeName(input.value) === province.normalized) {
+    if (provinceMatches(province, input.value)) {
       markComplete(province, true);
       plateBoard.querySelector(`[data-plate-button="${province.plate}"]`).classList.add('done');
       setFeedback(`${String(province.plate).padStart(2, '0')} — ${province.name}, doğru!`, 'success');
       input.value = '';
-      const next = state.provinces.find((p) => !state.completed.has(p.plate));
+      const next = state.provinces.find((p) => p.plate > province.plate && !state.completed.has(p.plate))
+        || state.provinces.find((p) => !state.completed.has(p.plate));
       if (next) {
         state.selectedPlate = next.plate;
         plateBoard.querySelectorAll('.active').forEach((el) => el.classList.remove('active'));
@@ -384,7 +410,7 @@ function setupPlate() {
 
 function resetGame(mode = state.mode) {
   stopTimer();
-  Object.assign(state, { mode, startedAt: null, elapsed: 0, timerId: null, timerEnabled: true, timerPaused: false, completed: new Set(), selected: null, current: null, wrongCount: 0, order: [], selectedPlate: 1, finished: false });
+  Object.assign(state, { mode, startedAt: null, elapsed: 0, timerId: null, timerEnabled: true, timerPaused: false, completed: new Set(), selected: null, current: null, wrongCount: 0, order: [], selectedPlate: 1, gameStarted: false, finished: false });
   window.speechSynthesis?.cancel?.();
   clearMap();
   plateBoard.classList.add('is-hidden');
@@ -393,8 +419,11 @@ function resetGame(mode = state.mode) {
   timer.textContent = '00:00';
   syncTimerControls();
   updateProgress();
-  setFeedback('Hazır olduğunda ilk hamleni yap.');
+  setFeedback('Hazır olduğunda Başla düğmesine bas.');
   document.querySelector('#finish-dialog').hidden = true;
+  document.querySelector('#save-time-prompt').hidden = false;
+  document.querySelector('#save-time-status').textContent = '';
+  document.querySelectorAll('#save-time-prompt button').forEach((button) => { button.disabled = false; });
   const meta = modeMeta[mode];
   document.querySelector('#mode-kicker').textContent = `OYUN ${meta.number}`;
   document.querySelector('#game-title').textContent = meta.title;
@@ -404,7 +433,21 @@ function resetGame(mode = state.mode) {
   if (mode === 'fill') setupFill();
   if (mode === 'listen') setupListen();
   if (mode === 'plate') setupPlate();
+  controls.setAttribute('inert', '');
+  startGameButton.hidden = false;
+  startGameButton.focus();
+}
+
+function beginGame() {
+  if (!state.mode || state.gameStarted || state.finished) return;
+  state.gameStarted = true;
+  controls.removeAttribute('inert');
+  startGameButton.hidden = true;
+  syncTimerControls();
+  setFeedback('Süre başladı. Başarılar!');
   startTimer();
+  if (state.mode === 'listen') nextSpokenProvince();
+  else document.querySelector('#answer-input')?.focus();
 }
 
 async function startGame(mode) {
@@ -429,7 +472,23 @@ function finishGame() {
   document.querySelector('#finish-summary').textContent = state.timerEnabled
     ? `${formatTime(state.elapsed)} içinde Türkiye'nin 81 ilini tamamladın.`
     : `Türkiye'nin 81 ilini tamamladın.`;
+  document.querySelector('#save-time-prompt').hidden = !state.timerEnabled;
   dialog.hidden = false;
+}
+
+function answerSaveTime(shouldSave) {
+  const status = document.querySelector('#save-time-status');
+  if (shouldSave) {
+    try {
+      const records = JSON.parse(localStorage.getItem('turkiye-harita-sureleri') || '[]');
+      records.push({ mode: state.mode, seconds: state.elapsed, savedAt: new Date().toISOString() });
+      localStorage.setItem('turkiye-harita-sureleri', JSON.stringify(records.slice(-50)));
+      status.textContent = 'Süreniz bu cihazda kaydedildi.';
+    } catch {
+      status.textContent = 'Süre kaydedilemedi. Tarayıcı depolamasını kontrol edin.';
+    }
+  } else status.textContent = 'Süreniz kaydedilmedi.';
+  document.querySelectorAll('#save-time-prompt button').forEach((button) => { button.disabled = true; });
 }
 
 document.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => showScreen(button.dataset.next)));
@@ -439,6 +498,9 @@ document.querySelector('#back-button').addEventListener('click', () => navigateB
 document.querySelector('#restart-button').addEventListener('click', () => resetGame());
 document.querySelector('#finish-restart').addEventListener('click', () => resetGame());
 document.querySelector('#finish-menu').addEventListener('click', () => navigateBack('mode-screen'));
+startGameButton.addEventListener('click', beginGame);
+document.querySelector('#save-time-yes').addEventListener('click', () => answerSaveTime(true));
+document.querySelector('#save-time-no').addEventListener('click', () => answerSaveTime(false));
 soundButton.addEventListener('click', speakCurrent);
 timerPauseButton.addEventListener('click', () => {
   if (!state.timerEnabled || state.finished) return;
@@ -460,7 +522,7 @@ timerDisableButton.addEventListener('click', () => {
   } else {
     state.timerEnabled = true;
     state.timerPaused = false;
-    startTimer();
+    if (state.gameStarted) startTimer();
   }
   renderTimer();
   syncTimerControls();
@@ -517,10 +579,12 @@ if ('serviceWorker' in navigator) {
 }
 
 window.addEventListener('keydown', (event) => {
-  if (!document.querySelector('#welcome-screen').classList.contains('is-active')) return;
   if (event.metaKey || event.ctrlKey || event.altKey) return;
-  if (event.target.closest?.('button, input, textarea, select, a')) return;
-  showScreen('tribute-screen');
+  const activeScreen = document.querySelector('.screen.is-active');
+  const interactiveTarget = event.target.closest?.('button, input, textarea, select, a');
+  if (interactiveTarget && activeScreen?.contains(interactiveTarget)) return;
+  if (document.querySelector('#welcome-screen').classList.contains('is-active')) showScreen('tribute-screen');
+  else if (document.querySelector('#tribute-screen').classList.contains('is-active')) showScreen('mode-screen');
 });
 
 window.addEventListener('popstate', (event) => {
