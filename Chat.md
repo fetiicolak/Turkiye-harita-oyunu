@@ -27,7 +27,9 @@ Bu dosya, geliştirme sırasında alınan önemli teknik ve ürün kararlarını
 - Atatürk sayfası mevcut lisanslı portreyi, gerçek il sınırlarından üretilen Türkiye haritasıyla birlikte kullanır.
 - Favicon ve uygulama ikonu yazısızdır: kare çerçeve içinde kuzey yarım küreden görülen kürede Türkiye belirgin bir sınır ve arazi vurgusuyla merkezlenir.
 - Mobil kapak, yatay masaüstü görselini zorla ölçeklemek yerine aynı tasarımın 941×1672 piksel dikey varyantını kullanır. Görsel `cover` ile tüm ekranı doldurur; Türkiye batıdan doğuya güvenli kadraj içinde kalır ve boş bant oluşmaz. Atatürk ekranındaki Türkiye SVG'si genişliği değişmeden portre üzerinde sola taşınmıştır.
-- Gezinme düğmelerindeki `Sağa kaydır` ve `Sola kaydır` yardımcı metinleri masaüstünde gizlenir, yalnızca 640 piksel ve altındaki ekranlarda gösterilir.
+- Gezinme düğmelerindeki `Sağa kaydır` ve `Sola kaydır` yardımcı metinleri masaüstünde gizlenir; dokunmatik/kaba işaretçili cihazlarda (`any-pointer: coarse`) gösterilir.
+- Kaydırma desteği ekran genişliğine değil dokunmatik giriş (`ontouchstart` / `maxTouchPoints`) desteğine göre çalışır; böylece tabletler de kapsanır.
+- 1180 piksele kadar dikey tabletler mobil kapak görselini kullanır. Telefonda ana sayfa alt dolgusu `4vh` değerine indirilerek metin grubu ekranın altındaki boş alanı dolduracak şekilde aşağı taşınır.
 
 ## Hata kayıtları
 

@@ -213,10 +213,23 @@ button { cursor: pointer; }
   .data-credit { margin-top: .35rem; }
 }
 
+@media (max-width: 1180px) and (orientation: portrait) {
+  .welcome-screen { align-items: flex-end; padding-bottom: 5vh; background-image: url('assets/kapak-turkiye-kure-mobil.png'); background-position: center top; background-size: cover; }
+  .welcome-screen::before { background: linear-gradient(0deg, rgba(250,241,221,.98) 0%, rgba(250,241,221,.72) 47%, rgba(250,241,221,.06) 86%); }
+  .welcome-copy { width: min(780px, 100%); }
+  .turkey-word { right: 3vw; top: 5.25rem; bottom: auto; font-size: clamp(4rem, 14vw, 7.5rem); opacity: .92; }
+}
+
+@media (any-pointer: coarse) {
+  .screen-nav button small { display: block; }
+  .desktop-copy { display: none; }
+  .mobile-copy { display: inline; }
+}
+
 @media (max-width: 640px) {
   .install-app { top: auto; right: max(.75rem, env(safe-area-inset-right)); bottom: max(.75rem, env(safe-area-inset-bottom)); }
   .install-guide { top: auto; right: .75rem; bottom: calc(max(.75rem, env(safe-area-inset-bottom)) + 3.7rem); }
-  .welcome-screen { align-items: flex-end; padding-bottom: 16vh; background-image: url('assets/kapak-turkiye-kure-mobil.png'); background-position: center top; background-size: cover; }
+  .welcome-screen { align-items: flex-end; padding-bottom: 4vh; background-image: url('assets/kapak-turkiye-kure-mobil.png'); background-position: center top; background-size: cover; }
   .welcome-screen::before { background: linear-gradient(0deg, rgba(250,241,221,.98) 0%, rgba(250,241,221,.78) 48%, rgba(250,241,221,.08) 88%); }
   .welcome-copy { width: 100%; }
   .welcome-copy h1 { font-size: clamp(2.55rem, 12vw, 4.2rem); }

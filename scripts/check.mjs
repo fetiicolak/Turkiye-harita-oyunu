@@ -50,7 +50,7 @@ if ((html.match(/data-mode=/g) ?? []).length !== 4) throw new Error('Dört oyun 
 for (const id of ['timer-pause', 'timer-disable', 'tribute-map', 'start-game-button', 'save-time-prompt', 'exit-button', 'exit-dialog', 'finish-missing']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Yeni arayüz denetimi eksik: ${id}`);
 }
-if (!html.includes('styles.css?v=8') || !html.includes('app.js?v=8')) {
+if (!html.includes('styles.css?v=9') || !html.includes('app.js?v=9')) {
   throw new Error('Güncel önbellek sürümü HTML bağlantılarına eklenmemiş.');
 }
 if (html.includes('<datalist') || html.includes('list="province-list"')) {
@@ -67,7 +67,7 @@ for (const removedText of ['Her mod 81 ilin tamamıyla oynanır', 'İpucu: Türk
 }
 
 const app = await readFile('dist/app.js', 'utf8');
-for (const behavior of ["querySelectorAll('[data-mode]')", 'mapReadyPromise', "addEventListener('touchend'", 'timerPauseButton.addEventListener']) {
+for (const behavior of ["querySelectorAll('[data-mode]')", 'mapReadyPromise', "addEventListener('touchend'", 'navigator.maxTouchPoints', 'timerPauseButton.addEventListener']) {
   if (!app.includes(behavior)) throw new Error(`Etkileşim davranışı eksik: ${behavior}`);
 }
 for (const behavior of ["addEventListener('popstate'", "querySelectorAll('[data-back]')", 'navigateBack']) {
@@ -85,8 +85,11 @@ if (!styles.includes('.finish-dialog[hidden]')) throw new Error('Sonuç penceres
 if (!styles.includes("background-image: url('assets/kapak-turkiye-kure-mobil.png')") || !styles.includes('background-size: cover')) {
   throw new Error('Mobil kapakta tam ekran dikey görsel ayarı eksik.');
 }
-if (!styles.includes('.screen-nav button small { display: none;') || !styles.includes('.screen-nav button small { display: block;')) {
+if (!styles.includes('.screen-nav button small { display: none;') || !styles.includes('@media (any-pointer: coarse)')) {
   throw new Error('Kaydırma açıklamalarının yalnızca mobilde gösterilmesi sağlanmamış.');
+}
+if (!styles.includes('@media (max-width: 1180px) and (orientation: portrait)') || !styles.includes('padding-bottom: 4vh')) {
+  throw new Error('Telefon/tablet ana sayfa düzeni eksik.');
 }
 
 const manifest = JSON.parse(await readFile('dist/manifest.webmanifest', 'utf8'));

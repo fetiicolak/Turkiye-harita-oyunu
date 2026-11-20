@@ -630,7 +630,7 @@ Object.entries(swipeRoutes).forEach(([screenId, routes]) => {
   const screen = document.querySelector(`#${screenId}`);
   let touchStart = null;
   screen.addEventListener('touchstart', (event) => {
-    if (!window.matchMedia('(max-width: 640px)').matches) return;
+    if (!('ontouchstart' in window) && navigator.maxTouchPoints < 1) return;
     const touch = event.changedTouches[0];
     touchStart = { x: touch.clientX, y: touch.clientY };
   }, { passive: true });
