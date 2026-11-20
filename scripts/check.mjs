@@ -10,6 +10,7 @@ const required = [
   'dist/assets/app-icon-maskable.svg',
   'dist/assets/turkiye_iller.geojson',
   'dist/assets/ataturk-portre.png',
+  'dist/assets/kapak-turkiye-kure.png',
   '.openai/hosting.json'
 ];
 
@@ -34,6 +35,23 @@ for (const id of ['welcome-screen', 'tribute-screen', 'mode-screen', 'game-scree
 }
 if (!html.includes('rel="manifest"') || !html.includes('id="install-app"')) {
   throw new Error('PWA manifest bağlantısı veya yükleme düğmesi eksik.');
+}
+if ((html.match(/data-mode=/g) ?? []).length !== 4) throw new Error('Dört oyun modu kartı bulunamadı.');
+for (const id of ['timer-pause', 'timer-disable', 'tribute-map']) {
+  if (!html.includes(`id="${id}"`)) throw new Error(`Yeni arayüz denetimi eksik: ${id}`);
+}
+for (const removedText of ['Her mod 81 ilin tamamıyla oynanır', 'İpucu: Türkçe karakter', 'Portre: maliozer']) {
+  if (html.includes(removedText)) throw new Error(`Kaldırılması istenen metin hâlâ sayfada: ${removedText}`);
+}
+
+const app = await readFile('dist/app.js', 'utf8');
+for (const behavior of ["querySelectorAll('[data-mode]')", 'mapReadyPromise', "addEventListener('touchend'", 'timerPauseButton.addEventListener']) {
+  if (!app.includes(behavior)) throw new Error(`Etkileşim davranışı eksik: ${behavior}`);
+}
+
+const styles = await readFile('dist/styles.css', 'utf8');
+if (!styles.includes('@media (min-width: 1001px)') || !styles.includes('overflow: hidden')) {
+  throw new Error('Masaüstü tam ekran düzeni bulunamadı.');
 }
 
 const manifest = JSON.parse(await readFile('dist/manifest.webmanifest', 'utf8'));

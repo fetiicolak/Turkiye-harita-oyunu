@@ -42,29 +42,27 @@ button { cursor: pointer; }
 
 .welcome-screen {
   position: relative; overflow: hidden; align-items: center; padding: clamp(2rem, 6vw, 6rem);
-  background: radial-gradient(circle at 72% 40%, #fff 0, transparent 37%), linear-gradient(145deg, #fbf8ef 20%, #eee7d6);
+  background: #f3dfbc url('assets/kapak-turkiye-kure.png') center/cover no-repeat;
 }
-.welcome-screen::before { content: ""; position: absolute; top: -24vw; right: -16vw; width: 65vw; aspect-ratio: 1; border: 1px solid rgba(184,36,45,.18); border-radius: 50%; box-shadow: 0 0 0 7vw rgba(184,36,45,.025), 0 0 0 14vw rgba(184,36,45,.025); }
+.welcome-screen::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(250,241,221,.32), transparent 56%); pointer-events: none; }
 .welcome-copy { position: relative; z-index: 2; width: min(800px, 92%); }
-.welcome-copy h1 { margin: 0; max-width: 760px; font: 700 clamp(3rem, 7.2vw, 7.6rem)/.96 var(--serif); letter-spacing: -.045em; }
+.welcome-copy h1 { margin: 0; max-width: 760px; font: 700 clamp(3rem, 6.6vw, 7.1rem)/.96 var(--serif); letter-spacing: -.045em; text-shadow: 0 2px 18px rgba(255,248,231,.55); }
 .welcome-copy .lede { max-width: 560px; margin: 2rem 0; color: var(--muted); font-size: clamp(1rem, 1.5vw, 1.2rem); line-height: 1.7; }
-.press-key { border: 0; border-bottom: 1px solid var(--ink); padding: .75rem 0; background: transparent; color: var(--ink); font-weight: 700; }
-.press-key::before { content: "↳"; margin-right: .75rem; color: var(--red); }
-.turkey-word { position: absolute; right: -1vw; bottom: -2.5vw; color: rgba(184,36,45,.06); font-size: clamp(5rem, 16vw, 15rem); font-weight: 700; letter-spacing: -.08em; }
-.flag-orbit { position: absolute; right: 9vw; top: 11vh; width: 180px; height: 180px; border: 1px solid rgba(184,36,45,.25); border-radius: 50%; }
-.flag-orbit span { position: absolute; color: var(--red); }
-.flag-orbit span:nth-child(1) { top: 8%; left: 18%; font-size: 2rem; }
-.flag-orbit span:nth-child(2) { right: 8%; top: 44%; }
-.flag-orbit span:nth-child(3) { bottom: 4%; left: 40%; font-size: .8rem; }
+.press-key { display: inline-flex; align-items: center; gap: .75rem; border: 0; border-bottom: 1px solid var(--ink); padding: .75rem 0; background: transparent; color: var(--ink); font-weight: 700; }
+.press-key::after { content: "→"; color: var(--red); font-size: 1.35em; line-height: 1; transition: transform .2s ease; }
+.press-key:hover::after { transform: translateX(5px); }
+.mobile-copy { display: none; }
+.turkey-word { position: absolute; z-index: 2; right: 2vw; bottom: 1.6vw; color: #c31f2b; font: 900 clamp(4.5rem, 13vw, 12.5rem)/.82 var(--sans); letter-spacing: -.07em; transform: perspective(600px) rotateX(7deg); text-shadow: 0 1px 0 #8f111a, 0 3px 0 #7c0d15, 0 6px 0 #680a11, 0 13px 20px rgba(78,7,12,.32), 0 0 2px #fff; }
 
-.tribute-screen { position: relative; align-items: center; padding: clamp(2rem, 8vw, 8rem); overflow: hidden; background: #201d19 url('assets/ataturk-portre.png') right 26% center/auto 115% no-repeat; color: white; }
-.tribute-screen::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(20,22,20,.98) 0%, rgba(24,25,22,.87) 35%, rgba(20,20,18,.08) 75%), radial-gradient(circle at 20% 50%, rgba(184,36,45,.38), transparent 45%); }
+.tribute-screen { position: relative; align-items: center; padding: clamp(2rem, 8vw, 8rem); overflow: hidden; background: #191b18 url('assets/ataturk-portre.png') right 12% bottom/auto 112% no-repeat; color: white; }
+.tribute-screen::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(15,18,16,.99) 0%, rgba(19,22,19,.9) 39%, rgba(18,20,17,.14) 78%), radial-gradient(circle at 64% 52%, rgba(184,36,45,.25), transparent 42%); }
+.tribute-map { position: absolute; z-index: 1; right: 4%; top: 50%; width: min(72vw, 1100px); height: auto; transform: translateY(-50%) rotate(-2deg); opacity: .38; filter: drop-shadow(0 0 22px rgba(225,74,83,.28)); }
+.tribute-map .province { fill: rgba(130,27,34,.42); stroke: rgba(241,201,185,.55); stroke-width: .8; pointer-events: none; }
 .tribute-shade { position: absolute; inset: 0; z-index: 1; background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px); background-size: 100% 7px; mix-blend-mode: overlay; }
 .tribute-copy { position: relative; z-index: 2; max-width: 650px; }
 .tribute-copy h2 { margin: 0; font: 700 clamp(4rem, 8vw, 8.5rem)/.87 var(--serif); letter-spacing: -.05em; }
 .tribute-copy h2 em { color: #e14a53; }
 .tribute-copy > p:not(.eyebrow) { margin: 2rem 0; color: #d9d4ca; font-size: 1.1rem; }
-.image-credit { position: absolute; z-index: 3; right: 1rem; bottom: 1rem; margin: 0; color: rgba(255,255,255,.55); font-size: .72rem; }
 
 .primary-button, .secondary-button { border-radius: 999px; padding: .9rem 1.25rem; font-weight: 700; transition: .2s ease; }
 .primary-button { border: 1px solid var(--red); background: var(--red); color: white; }
@@ -100,6 +98,11 @@ button { cursor: pointer; }
 .game-stats div { min-width: 80px; }
 .game-stats small { display: block; color: var(--muted); font-size: .65rem; font-weight: 700; letter-spacing: .14em; }
 .game-stats strong { font: 700 1.35rem var(--serif); font-variant-numeric: tabular-nums; }
+.timer-stat { position: relative; }
+.timer-actions { display: flex; gap: .25rem; margin-top: .2rem; }
+.timer-actions button { border: 0; border-bottom: 1px solid rgba(18,38,32,.25); padding: .15rem 0; background: transparent; color: var(--muted); font-size: .62rem; font-weight: 700; }
+.timer-actions button:hover { color: var(--red); border-color: var(--red); }
+.timer-actions button:disabled { opacity: .38; cursor: not-allowed; }
 .game-layout { display: grid; grid-template-columns: minmax(280px, 350px) minmax(0, 1fr); flex: 1; min-height: 0; }
 .control-panel { display: flex; flex-direction: column; padding: clamp(1.5rem, 3vw, 3rem); border-right: 1px solid var(--line); background: #fbf8f0; }
 .control-panel h1 { margin: 0; font: 700 clamp(2rem, 3vw, 3.5rem)/1 var(--serif); }
@@ -162,14 +165,41 @@ button { cursor: pointer; }
   .plate-board { grid-template-columns: repeat(9, 1fr); }
 }
 
+@media (min-width: 1001px) {
+  html, body, #app { height: 100%; overflow: hidden; }
+  .screen { height: 100dvh; min-height: 0; overflow: hidden; }
+  .mode-screen { padding: clamp(1rem, 2.6vh, 2rem) clamp(1.5rem, 3vw, 3rem); }
+  .selection-header { margin-bottom: clamp(1rem, 2.5vh, 2rem); }
+  .selection-header h2 { font-size: clamp(2.7rem, 6vh, 5rem); }
+  .mode-grid { min-height: 0; flex: 1; align-items: stretch; }
+  .mode-card { min-height: 0; height: 100%; max-height: 560px; padding: clamp(1rem, 2.5vh, 1.5rem); }
+  .mode-icon { width: clamp(66px, 10vh, 96px); height: clamp(66px, 10vh, 96px); margin: clamp(1.2rem, 4vh, 3.2rem) auto; }
+  .mode-card small { margin: clamp(.65rem, 1.5vh, 1rem) 0 clamp(1rem, 2vh, 2rem); }
+  .game-screen { height: 100dvh; min-height: 0; }
+  .game-header { min-height: 72px; padding-top: .5rem; padding-bottom: .5rem; }
+  .game-layout { overflow: hidden; }
+  .control-panel { min-height: 0; overflow: auto; padding: clamp(1.2rem, 2.5vh, 2rem) clamp(1.2rem, 2.2vw, 2.25rem); }
+  .map-area { min-height: 0; overflow: hidden; padding: clamp(.8rem, 1.8vh, 1.5rem) clamp(1rem, 2vw, 2rem); }
+  .map-shell { flex: 1 1 auto; min-height: 0; }
+  #turkey-map { height: 100%; max-height: 100%; }
+  .plate-board { grid-template-columns: repeat(17, minmax(28px, 1fr)); margin-top: .5rem; gap: .22rem; }
+  .plate-button { padding: .3rem .18rem; }
+  .data-credit { margin-top: .35rem; }
+}
+
 @media (max-width: 640px) {
   .install-app { top: auto; right: max(.75rem, env(safe-area-inset-right)); bottom: max(.75rem, env(safe-area-inset-bottom)); }
   .install-guide { top: auto; right: .75rem; bottom: calc(max(.75rem, env(safe-area-inset-bottom)) + 3.7rem); }
-  .welcome-screen { align-items: flex-end; padding-bottom: 16vh; }
+  .welcome-screen { align-items: flex-end; padding-bottom: 16vh; background-position: 62% center; }
+  .welcome-screen::before { background: linear-gradient(0deg, rgba(250,241,221,.98) 0%, rgba(250,241,221,.78) 48%, rgba(250,241,221,.08) 88%); }
   .welcome-copy { width: 100%; }
-  .welcome-copy h1 { font-size: clamp(2.8rem, 14vw, 4.4rem); }
-  .flag-orbit { right: -30px; top: 5vh; width: 120px; height: 120px; }
-  .tribute-screen { align-items: end; padding-bottom: 12vh; background-position: 64% center; }
+  .welcome-copy h1 { font-size: clamp(2.55rem, 12vw, 4.2rem); }
+  .welcome-copy .lede { margin: 1.25rem 0; }
+  .desktop-copy { display: none; }
+  .mobile-copy { display: inline; }
+  .turkey-word { right: 3vw; top: 4.5rem; bottom: auto; font-size: clamp(3.5rem, 18vw, 6rem); opacity: .92; }
+  .tribute-screen { align-items: end; padding-bottom: 12vh; background-position: 58% center; background-size: auto 92%; }
+  .tribute-map { width: 130vw; right: -42%; top: 42%; opacity: .32; }
   .tribute-screen::after { background: linear-gradient(0deg, rgba(15,16,14,.98) 0%, rgba(20,20,18,.73) 48%, rgba(20,20,18,.08) 90%); }
   .tribute-copy h2 { font-size: clamp(3.6rem, 17vw, 5.5rem); }
   .selection-header { display: block; }

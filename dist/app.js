@@ -5,6 +5,8 @@ const state = {
   startedAt: null,
   elapsed: 0,
   timerId: null,
+  timerEnabled: true,
+  timerPaused: false,
   completed: new Set(),
   selected: null,
   current: null,
@@ -22,6 +24,8 @@ const timer = document.querySelector('#timer');
 const progress = document.querySelector('#progress');
 const plateBoard = document.querySelector('#plate-board');
 const soundButton = document.querySelector('#sound-button');
+const timerPauseButton = document.querySelector('#timer-pause');
+const timerDisableButton = document.querySelector('#timer-disable');
 const installButton = document.querySelector('#install-app');
 const installGuide = document.querySelector('#install-guide');
 const installGuideText = document.querySelector('#install-guide-text');
@@ -48,19 +52,36 @@ function formatTime(totalSeconds) {
   return `${minutes}:${seconds}`;
 }
 
+function currentElapsed() {
+  const runningSeconds = state.startedAt ? Math.floor((Date.now() - state.startedAt) / 1000) : 0;
+  return state.elapsed + runningSeconds;
+}
+
+function renderTimer() {
+  timer.textContent = state.timerEnabled ? formatTime(currentElapsed()) : '--:--';
+}
+
 function startTimer() {
-  if (state.startedAt || state.finished) return;
+  if (!state.timerEnabled || state.timerPaused || state.timerId || state.finished) return;
   state.startedAt = Date.now();
-  state.timerId = window.setInterval(() => {
-    state.elapsed = Math.floor((Date.now() - state.startedAt) / 1000);
-    timer.textContent = formatTime(state.elapsed);
-  }, 250);
+  state.timerId = window.setInterval(renderTimer, 250);
+  renderTimer();
 }
 
 function stopTimer() {
-  clearInterval(state.timerId);
+  if (state.startedAt) state.elapsed += Math.floor((Date.now() - state.startedAt) / 1000);
+  window.clearInterval(state.timerId);
   state.timerId = null;
-  if (state.startedAt) state.elapsed = Math.floor((Date.now() - state.startedAt) / 1000);
+  state.startedAt = null;
+  renderTimer();
+}
+
+function syncTimerControls() {
+  timerPauseButton.textContent = state.timerPaused ? 'Devam et' : 'Durdur';
+  timerPauseButton.setAttribute('aria-label', state.timerPaused ? 'Süreyi devam ettir' : 'Süreyi durdur');
+  timerPauseButton.disabled = !state.timerEnabled;
+  timerDisableButton.textContent = state.timerEnabled ? 'Kapat' : 'Aç';
+  timerDisableButton.setAttribute('aria-label', state.timerEnabled ? 'Süreyi kapat' : 'Süreyi aç');
 }
 
 function setFeedback(message, type = '') {
@@ -131,7 +152,16 @@ function buildMap() {
     fragment.append(path);
   });
   map.replaceChildren(fragment);
-  document.querySelector('#map-loader').remove();
+  const tributeMap = document.querySelector('#tribute-map');
+  const tributeFragment = document.createDocumentFragment();
+  state.provinces.forEach((province) => {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', provincePath(province.feature, bounds));
+    path.setAttribute('class', 'province');
+    tributeFragment.append(path);
+  });
+  tributeMap.replaceChildren(tributeFragment);
+  document.querySelector('#map-loader')?.remove();
   document.querySelector('#map-shell').setAttribute('aria-busy', 'false');
   document.querySelector('#province-list').innerHTML = state.provinces.map((p) => `<option value="${p.name}"></option>`).join('');
   buildPlateBoard();
@@ -330,13 +360,14 @@ function setupPlate() {
 
 function resetGame(mode = state.mode) {
   stopTimer();
-  Object.assign(state, { mode, startedAt: null, elapsed: 0, timerId: null, completed: new Set(), selected: null, current: null, wrongCount: 0, order: [], selectedPlate: 1, finished: false });
+  Object.assign(state, { mode, startedAt: null, elapsed: 0, timerId: null, timerEnabled: true, timerPaused: false, completed: new Set(), selected: null, current: null, wrongCount: 0, order: [], selectedPlate: 1, finished: false });
   window.speechSynthesis?.cancel?.();
   clearMap();
   plateBoard.classList.add('is-hidden');
   plateBoard.querySelectorAll('.done,.active').forEach((el) => el.classList.remove('done', 'active'));
   soundButton.classList.add('is-hidden');
   timer.textContent = '00:00';
+  syncTimerControls();
   updateProgress();
   setFeedback('Hazır olduğunda ilk hamleni yap.');
   document.querySelector('#finish-dialog').hidden = true;
@@ -349,10 +380,21 @@ function resetGame(mode = state.mode) {
   if (mode === 'fill') setupFill();
   if (mode === 'listen') setupListen();
   if (mode === 'plate') setupPlate();
+  startTimer();
 }
 
-function startGame(mode) {
+async function startGame(mode) {
   showScreen('game-screen');
+  if (!state.geo) {
+    document.querySelector('#game-title').textContent = 'Harita hazırlanıyor';
+    setFeedback('81 ilin harita verisi yükleniyor…');
+    try {
+      await mapReadyPromise;
+    } catch {
+      setFeedback('Harita yüklenemedi. Bağlantını kontrol edip sayfayı yenile.', 'error');
+      return;
+    }
+  }
   resetGame(mode);
 }
 
@@ -360,7 +402,9 @@ function finishGame() {
   state.finished = true;
   stopTimer();
   const dialog = document.querySelector('#finish-dialog');
-  document.querySelector('#finish-summary').textContent = `${formatTime(state.elapsed)} içinde Türkiye'nin 81 ilini tamamladın.`;
+  document.querySelector('#finish-summary').textContent = state.timerEnabled
+    ? `${formatTime(state.elapsed)} içinde Türkiye'nin 81 ilini tamamladın.`
+    : `Türkiye'nin 81 ilini tamamladın.`;
   dialog.hidden = false;
 }
 
@@ -371,6 +415,31 @@ document.querySelector('#restart-button').addEventListener('click', () => resetG
 document.querySelector('#finish-restart').addEventListener('click', () => resetGame());
 document.querySelector('#finish-menu').addEventListener('click', () => showScreen('mode-screen'));
 soundButton.addEventListener('click', speakCurrent);
+timerPauseButton.addEventListener('click', () => {
+  if (!state.timerEnabled || state.finished) return;
+  if (state.timerPaused) {
+    state.timerPaused = false;
+    startTimer();
+  } else {
+    stopTimer();
+    state.timerPaused = true;
+  }
+  syncTimerControls();
+});
+timerDisableButton.addEventListener('click', () => {
+  if (state.finished) return;
+  if (state.timerEnabled) {
+    stopTimer();
+    state.timerEnabled = false;
+    state.timerPaused = false;
+  } else {
+    state.timerEnabled = true;
+    state.timerPaused = false;
+    startTimer();
+  }
+  renderTimer();
+  syncTimerControls();
+});
 
 function isStandalone() {
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -412,7 +481,13 @@ refreshInstallButton();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch((error) => console.error('Service worker kaydı başarısız:', error));
+    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch((error) => console.error('Service worker kaydı başarısız:', error));
+  });
+  let refreshingForUpdate = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshingForUpdate) return;
+    refreshingForUpdate = true;
+    window.location.reload();
   });
 }
 
@@ -424,7 +499,21 @@ window.addEventListener('keydown', (event) => {
   showScreen('tribute-screen');
 });
 
-fetch('assets/turkiye_iller.geojson')
+let welcomeTouchStart = null;
+const welcomeScreen = document.querySelector('#welcome-screen');
+welcomeScreen.addEventListener('touchstart', (event) => {
+  const touch = event.changedTouches[0];
+  welcomeTouchStart = { x: touch.clientX, y: touch.clientY };
+}, { passive: true });
+welcomeScreen.addEventListener('touchend', (event) => {
+  if (!welcomeTouchStart || !welcomeScreen.classList.contains('is-active')) return;
+  const touch = event.changedTouches[0];
+  const distance = Math.hypot(touch.clientX - welcomeTouchStart.x, touch.clientY - welcomeTouchStart.y);
+  welcomeTouchStart = null;
+  if (distance >= 45) showScreen('tribute-screen');
+}, { passive: true });
+
+const mapReadyPromise = fetch('assets/turkiye_iller.geojson')
   .then((response) => {
     if (!response.ok) throw new Error('Harita verisi yüklenemedi.');
     return response.json();
@@ -433,4 +522,5 @@ fetch('assets/turkiye_iller.geojson')
   .catch((error) => {
     document.querySelector('#map-loader').textContent = error.message;
     console.error(error);
+    throw error;
   });

@@ -1,13 +1,14 @@
-const CACHE_NAME = 'turkiye-harita-oyunu-v2';
+const CACHE_NAME = 'turkiye-harita-oyunu-v3';
 const CORE_ASSETS = [
   './',
   './index.html',
-  './styles.css',
-  './app.js',
+  './styles.css?v=3',
+  './app.js?v=3',
   './manifest.webmanifest',
   './assets/app-icon.svg',
   './assets/app-icon-maskable.svg',
   './assets/ataturk-portre.png',
+  './assets/kapak-turkiye-kure.png',
   './assets/turkiye_iller.geojson'
 ];
 
@@ -42,12 +43,12 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
+    fetch(event.request).then((response) => {
       if (response.ok) {
         const copy = response.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
       }
       return response;
-    }))
+    }).catch(() => caches.match(event.request))
   );
 });

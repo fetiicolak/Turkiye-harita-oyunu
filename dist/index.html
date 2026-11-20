@@ -13,30 +13,32 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/app-icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/app-icon.svg">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
   <main id="app">
     <section id="welcome-screen" class="screen welcome-screen is-active" aria-labelledby="welcome-title">
-      <div class="flag-orbit" aria-hidden="true"><span>★</span><span>✦</span><span>★</span></div>
       <div class="welcome-copy">
         <p class="eyebrow">81 İL · 4 OYUN · TEK HARİTA</p>
         <h1 id="welcome-title">Türklerin ülkesi Türkiye şehirler oyununa hoşgeldiniz.</h1>
-        <p class="lede">Haritaya ne kadar hakimsin? Refleksini ve coğrafya bilgini birlikte ölç.</p>
-        <button class="press-key" data-next="tribute-screen">Başlamak için herhangi bir tuşa bas</button>
+        <p class="lede">Haritaya ne kadar hakimsin? Kendini test et.</p>
+        <button class="press-key" data-next="tribute-screen">
+          <span class="desktop-copy">Başlamak için herhangi bir tuşa bas</span>
+          <span class="mobile-copy">Başlamak için kaydır</span>
+        </button>
       </div>
       <div class="turkey-word" aria-hidden="true">TÜRKİYE</div>
     </section>
 
     <section id="tribute-screen" class="screen tribute-screen" aria-labelledby="tribute-title">
+      <svg id="tribute-map" class="tribute-map" viewBox="0 0 1000 500" aria-hidden="true"></svg>
       <div class="tribute-shade"></div>
       <div class="tribute-copy">
         <p class="eyebrow light">BİR MİLLETİN ORTAK HAFIZASI</p>
         <h2 id="tribute-title">Ne Mutlu<br><em>Türküm</em> Diyene!</h2>
-        <p>Şehirlerini tanı, memleketini keşfet.</p>
+        <p>Memleketini bil, ülkeni bil.</p>
         <button class="primary-button" data-next="mode-screen">Oyunları keşfet</button>
       </div>
-      <p class="image-credit">Portre: maliozer/ataturk_blackwhite_portrait · MIT</p>
     </section>
 
     <section id="mode-screen" class="screen mode-screen" aria-labelledby="mode-title">
@@ -45,7 +47,6 @@
           <p class="eyebrow">TÜRKİYE HARİTA OYUNU</p>
           <h2 id="mode-title">Bir oyun seç.</h2>
         </div>
-        <p>Her mod 81 ilin tamamıyla oynanır. Süre ilk hamlende başlar.</p>
       </header>
       <div class="mode-grid">
         <button class="mode-card mode-red" data-mode="locate">
@@ -59,7 +60,7 @@
           <span class="mode-index">02</span>
           <span class="mode-icon" aria-hidden="true">✎</span>
           <strong>81'i Doldur</strong>
-          <small>İl isimlerini yaz, tüm Türkiye'yi olabildiğince hızlı yeşile boya.</small>
+          <small>İl isimlerini yaz, haritayı olabildiğince hızlı doldur.</small>
           <span class="mode-cta">Oyuna başla</span>
         </button>
         <button class="mode-card mode-navy" data-mode="listen">
@@ -77,7 +78,6 @@
           <span class="mode-cta">Oyuna başla</span>
         </button>
       </div>
-      <p class="selection-note">İpucu: Türkçe karakter kullanmasan da cevaplarını anlayacağız.</p>
     </section>
 
     <section id="game-screen" class="screen game-screen" aria-labelledby="game-title">
@@ -85,7 +85,13 @@
         <button id="back-button" class="icon-button" aria-label="Oyun seçimine dön">×</button>
         <div class="game-brand"><span class="brand-mark">TR</span><span>Türkiye<br><b>Harita Oyunu</b></span></div>
         <div class="game-stats">
-          <div><small>SÜRE</small><strong id="timer">00:00</strong></div>
+          <div class="timer-stat">
+            <small>SÜRE</small><strong id="timer">00:00</strong>
+            <span class="timer-actions">
+              <button id="timer-pause" type="button" aria-label="Süreyi durdur">Durdur</button>
+              <button id="timer-disable" type="button" aria-label="Süreyi kapat">Kapat</button>
+            </span>
+          </div>
           <div><small>İLERLEME</small><strong id="progress">0 / 81</strong></div>
         </div>
       </header>
@@ -140,6 +146,6 @@
     <p id="install-guide-text">Tarayıcı menüsünü açıp “Uygulamayı yükle” seçeneğini kullan.</p>
   </div>
   <datalist id="province-list"></datalist>
-  <script src="app.js" defer></script>
+  <script src="app.js?v=3" defer></script>
 </body>
 </html>
