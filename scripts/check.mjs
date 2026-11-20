@@ -50,7 +50,7 @@ if ((html.match(/data-mode=/g) ?? []).length !== 4) throw new Error('Dört oyun 
 for (const id of ['timer-pause', 'timer-disable', 'tribute-map', 'start-game-button', 'save-time-prompt', 'exit-button', 'exit-dialog', 'finish-missing']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Yeni arayüz denetimi eksik: ${id}`);
 }
-if (!html.includes('styles.css?v=9') || !html.includes('app.js?v=9')) {
+if (!html.includes('styles.css?v=10') || !html.includes('app.js?v=10')) {
   throw new Error('Güncel önbellek sürümü HTML bağlantılarına eklenmemiş.');
 }
 if (html.includes('<datalist') || html.includes('list="province-list"')) {
@@ -75,6 +75,9 @@ for (const behavior of ["addEventListener('popstate'", "querySelectorAll('[data-
 }
 for (const behavior of ['function beginGame()', 'provinceAliases', 'p.plate > province.plate', 'title.textContent = province.name', "localStorage.setItem('turkiye-harita-sureleri'", 'finishGame({ partial: true })', 'swipeRoutes']) {
   if (!app.includes(behavior)) throw new Error(`Yeni oyun davranışı eksik: ${behavior}`);
+}
+if (!app.includes("if (!state.gameStarted) {\n    navigateBack('mode-screen')")) {
+  throw new Error('Başlamamış oyundan doğrudan çıkış davranışı eksik.');
 }
 
 const styles = await readFile('dist/styles.css', 'utf8');

@@ -15,6 +15,7 @@ Bu dosya, geliştirme sırasında alınan önemli teknik ve ürün kararlarını
 - Şehir cevaplarında açılır öneri listesi kullanılmaz. Yaygın kısa/eski adlar (`Afyon`, `Urfa`, `Antep`, `Maraş`, `İçel`, `İzmit`, `Adapazarı`) doğru il ile eşleştirilir.
 - Tamamlanan süreler yalnızca kullanıcı onayıyla ve en fazla son 50 kayıt olacak şekilde cihazın yerel tarayıcı depolamasına kaydedilir; sunucuya gönderilmez.
 - Oyun ekranındaki `Çıkış` düğmesi üç yol sunar: mevcut oyuna devam etme, kaydetmeden oyun seçimine dönme veya mevcut ilerlemeyi erken sonuçlandırma. Erken sonuçta eksik iller açıklanır ve kayıt onayı verilirse süreyle birlikte tamamlanan/eksik il bilgileri de cihazda saklanır.
+- Oyun henüz `Başla` düğmesiyle başlatılmadıysa `Çıkış` doğrudan oyun seçimine döner; kaydedilecek ilerleme olmadığı için çıkış seçenekleri gösterilmez.
 - İl adları tüm oyun modlarında SVG erişilebilir başlıklarıyla imleç üzerine gelindiğinde gösterilir.
 - Mobil tanıtım ekranlarında sola kaydırma ileri, sağa kaydırma geri gezinir. Gezinme düğmelerinde bu hareketler alt açıklama olarak yer alır.
 - PWA ikonu ve favicon, kuzey yarım küreden Türkiye'ye odaklanan aynı kare küre görselinin 512, 192 ve 64 piksel PNG türevleridir.

@@ -483,6 +483,10 @@ function finishGame({ partial = false } = {}) {
 }
 
 function openExitDialog() {
+  if (!state.gameStarted) {
+    navigateBack('mode-screen');
+    return;
+  }
   exitTimerWasRunning = Boolean(state.timerId);
   if (exitTimerWasRunning) stopTimer();
   document.querySelector('#exit-dialog').hidden = false;
