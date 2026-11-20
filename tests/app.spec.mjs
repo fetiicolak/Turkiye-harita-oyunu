@@ -42,6 +42,25 @@ test('kaydedilmiş sonuç rekor penceresinde görünür', async ({ page }) => {
   await expect(page.locator('.record-row')).toContainText('01:35');
 });
 
+test('kişisel rekorlar düğmesi oyun kartlarının altında ortalanır', async ({ page }) => {
+  await page.goto('/#oyunlar');
+  const navBox = await page.locator('#mode-screen .screen-nav').boundingBox();
+  const recordBox = await page.locator('#records-button').boundingBox();
+  const secondCardBox = await page.locator('.mode-card').nth(1).boundingBox();
+  const thirdCardBox = await page.locator('.mode-card').nth(2).boundingBox();
+
+  expect(navBox).not.toBeNull();
+  expect(recordBox).not.toBeNull();
+  expect(secondCardBox).not.toBeNull();
+  expect(thirdCardBox).not.toBeNull();
+  expect(recordBox.y).toBeGreaterThan(secondCardBox.y + secondCardBox.height);
+  expect(recordBox.y).toBeGreaterThan(navBox.y + navBox.height);
+
+  const middleCardsCenter = (secondCardBox.x + secondCardBox.width / 2 + thirdCardBox.x + thirdCardBox.width / 2) / 2;
+  const recordCenter = recordBox.x + recordBox.width / 2;
+  expect(Math.abs(recordCenter - middleCardsCenter)).toBeLessThan(3);
+});
+
 test('tablet dokunma hareketiyle sayfalar arasında ilerler ve geri döner', async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 820, height: 1180 }, hasTouch: true, isMobile: true });
   const page = await context.newPage();
