@@ -5,7 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#f7f3e8">
   <meta name="description" content="Türkiye'nin 81 ilini dört farklı interaktif harita oyunuyla öğren.">
+  <meta name="application-name" content="Türkiye Harita Oyunu">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Harita Oyunu">
   <title>Türkiye Harita Oyunu</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/app-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/app-icon.svg">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -124,6 +131,14 @@
       </div>
     </section>
   </main>
+  <button id="install-app" class="install-app" type="button" hidden>
+    <span aria-hidden="true">↓</span> Uygulamayı indir
+  </button>
+  <div id="install-guide" class="install-guide" role="status" aria-live="polite" hidden>
+    <button id="close-install-guide" type="button" aria-label="Kapat">×</button>
+    <strong>Ana ekrana ekle</strong>
+    <p id="install-guide-text">Tarayıcı menüsünü açıp “Uygulamayı yükle” seçeneğini kullan.</p>
+  </div>
   <datalist id="province-list"></datalist>
   <script src="app.js" defer></script>
 </body>

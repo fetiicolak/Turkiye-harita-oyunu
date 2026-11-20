@@ -4,6 +4,10 @@ const required = [
   'dist/index.html',
   'dist/styles.css',
   'dist/app.js',
+  'dist/manifest.webmanifest',
+  'dist/sw.js',
+  'dist/assets/app-icon.svg',
+  'dist/assets/app-icon-maskable.svg',
   'dist/assets/turkiye_iller.geojson',
   'dist/assets/ataturk-portre.png',
   '.openai/hosting.json'
@@ -27,6 +31,19 @@ if (geo.features.some((feature) => !feature.properties?.il_adi || !feature.geome
 const html = await readFile('dist/index.html', 'utf8');
 for (const id of ['welcome-screen', 'tribute-screen', 'mode-screen', 'game-screen']) {
   if (!html.includes(`id="${id}"`)) throw new Error(`Ekran bulunamadı: ${id}`);
+}
+if (!html.includes('rel="manifest"') || !html.includes('id="install-app"')) {
+  throw new Error('PWA manifest bağlantısı veya yükleme düğmesi eksik.');
+}
+
+const manifest = JSON.parse(await readFile('dist/manifest.webmanifest', 'utf8'));
+if (manifest.display !== 'standalone' || !manifest.start_url || manifest.icons?.length < 2) {
+  throw new Error('PWA manifesti yüklenebilir uygulama gereksinimlerini karşılamıyor.');
+}
+
+const serviceWorker = await readFile('dist/sw.js', 'utf8');
+for (const asset of ['index.html', 'app.js', 'turkiye_iller.geojson']) {
+  if (!serviceWorker.includes(asset)) throw new Error(`Çevrimdışı önbellekte eksik varlık: ${asset}`);
 }
 
 console.log('Kontrol başarılı: 81 il ve tüm oyun ekranları hazır.');

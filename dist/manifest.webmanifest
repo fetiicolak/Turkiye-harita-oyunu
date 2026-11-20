@@ -1,0 +1,39 @@
+{
+  "id": "./",
+  "name": "Türkiye Harita Oyunu",
+  "short_name": "Harita Oyunu",
+  "description": "Türkiye'nin 81 ilini dört farklı etkileşimli harita oyunuyla öğren.",
+  "lang": "tr",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#f7f3e8",
+  "theme_color": "#b8242d",
+  "categories": ["education", "games"],
+  "icons": [
+    {
+      "src": "assets/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/app-icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Oyunu aç",
+      "short_name": "Oyna",
+      "description": "Türkiye harita oyunlarını aç",
+      "url": "./#oyunlar",
+      "icons": [{ "src": "assets/app-icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    }
+  ]
+}

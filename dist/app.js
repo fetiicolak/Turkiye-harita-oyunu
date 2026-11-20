@@ -22,6 +22,10 @@ const timer = document.querySelector('#timer');
 const progress = document.querySelector('#progress');
 const plateBoard = document.querySelector('#plate-board');
 const soundButton = document.querySelector('#sound-button');
+const installButton = document.querySelector('#install-app');
+const installGuide = document.querySelector('#install-guide');
+const installGuideText = document.querySelector('#install-guide-text');
+let deferredInstallPrompt = null;
 const modeMeta = {
   locate: { number: '01', title: 'Seç & Bil', description: 'Haritada bir ile dokun, ardından seçtiğin ilin adını yaz.', prompt: 'Önce haritadan bir şehir seç' },
   fill: { number: '02', title: "81'i Doldur", description: 'Aklına gelen illeri yaz. Her doğru cevap haritada yeşile dönüşür.', prompt: 'Şehir adını yaz ve haritayı doldur' },
@@ -367,6 +371,50 @@ document.querySelector('#restart-button').addEventListener('click', () => resetG
 document.querySelector('#finish-restart').addEventListener('click', () => resetGame());
 document.querySelector('#finish-menu').addEventListener('click', () => showScreen('mode-screen'));
 soundButton.addEventListener('click', speakCurrent);
+
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function refreshInstallButton() {
+  installButton.hidden = isStandalone();
+}
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  refreshInstallButton();
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  installButton.hidden = true;
+  installGuide.hidden = true;
+});
+
+installButton.addEventListener('click', async () => {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    refreshInstallButton();
+    return;
+  }
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  installGuideText.textContent = isIOS
+    ? 'Safari’de Paylaş düğmesine dokun, ardından “Ana Ekrana Ekle” seçeneğini seç.'
+    : 'Tarayıcı menüsünü açıp “Uygulamayı yükle” veya “Ana ekrana ekle” seçeneğini kullan.';
+  installGuide.hidden = false;
+});
+
+document.querySelector('#close-install-guide').addEventListener('click', () => { installGuide.hidden = true; });
+refreshInstallButton();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch((error) => console.error('Service worker kaydı başarısız:', error));
+  });
+}
 
 let welcomeKeyEnabled = true;
 window.addEventListener('keydown', (event) => {

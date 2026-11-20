@@ -26,6 +26,15 @@ button { cursor: pointer; }
 .screen.is-active { display: flex; animation: screen-in .55s ease both; }
 .is-hidden { display: none !important; }
 
+.install-app { position: fixed; z-index: 30; right: max(1rem, env(safe-area-inset-right)); top: max(1rem, env(safe-area-inset-top)); display: flex; align-items: center; gap: .55rem; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; padding: .75rem 1rem; background: rgba(18,38,32,.92); box-shadow: 0 12px 35px rgba(18,38,32,.2); color: white; font-size: .82rem; font-weight: 700; backdrop-filter: blur(10px); }
+.install-app[hidden], .install-guide[hidden] { display: none !important; }
+.install-app:hover { background: var(--red); transform: translateY(-2px); }
+.install-app span { display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid rgba(255,255,255,.45); border-radius: 50%; }
+.install-guide { position: fixed; z-index: 31; right: max(1rem, env(safe-area-inset-right)); top: calc(max(1rem, env(safe-area-inset-top)) + 3.7rem); width: min(340px, calc(100vw - 2rem)); border: 1px solid var(--line); border-radius: 16px; padding: 1rem 2.5rem 1rem 1rem; background: #fffdf7; box-shadow: var(--shadow); }
+.install-guide strong { font: 700 1.15rem var(--serif); }
+.install-guide p { margin: .45rem 0 0; color: var(--muted); font-size: .85rem; line-height: 1.5; }
+.install-guide button { position: absolute; right: .6rem; top: .45rem; border: 0; background: transparent; color: var(--muted); font-size: 1.4rem; }
+
 @keyframes screen-in { from { opacity: 0; transform: translateY(8px); } }
 
 .eyebrow { margin: 0 0 1rem; color: var(--red); font-size: .78rem; font-weight: 700; letter-spacing: .2em; }
@@ -154,6 +163,8 @@ button { cursor: pointer; }
 }
 
 @media (max-width: 640px) {
+  .install-app { top: auto; right: max(.75rem, env(safe-area-inset-right)); bottom: max(.75rem, env(safe-area-inset-bottom)); }
+  .install-guide { top: auto; right: .75rem; bottom: calc(max(.75rem, env(safe-area-inset-bottom)) + 3.7rem); }
   .welcome-screen { align-items: flex-end; padding-bottom: 16vh; }
   .welcome-copy { width: 100%; }
   .welcome-copy h1 { font-size: clamp(2.8rem, 14vw, 4.4rem); }
